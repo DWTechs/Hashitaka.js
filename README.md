@@ -21,7 +21,7 @@
 
 ## Synopsis
 
-**[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is an open source password and JWT management library for Node.js to create, encrypt and compare safely.
+**[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is a Node.js library for secure hash generation, encryption, and comparison.
 
 - Only 1 dependency to check inputs variables
 - Very lightweight
