@@ -9,11 +9,8 @@
 - [Support](#support)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [ES6](#es6)
-  - [Configure](#configure)
 - [API Reference](#api-reference)
 - [Error Handling](#error-handling)
-- [options](#options)
 - [Express.js](#expressjs)
 - [Contributors](#contributors)
 - [Stack](#stack)
@@ -61,19 +58,20 @@ import { randomPwd } from "@dwtechs/passken";
 const { PWD_SECRET } = process.env;
 
 /**
- * This function checks if a user-provided password matches a stored hashed password in a database.
- * It takes a request object req and a response object res as input, and uses a pass service to compare the password.
+ * This express middleware checks if a user-provided password matches a stored hashed password in a database.
  * If the password is correct, it calls the next() function to proceed with the request.
- * If the password is incorrect or missing, it calls next() with an error status and message.
+ * If the password is incorrect or missing, it calls next() with an error.
  */
 function comparePwd(req, res, next) {
   
   const pwd = req.body.pwd; // from request
   const hash = req.user.hash; //from db
-  if (compare(pwd, hash, PWD_SECRET))
-    return next();
-  
-  return next(new InvalidStringError("Wrong password"));
+  try {
+    if (compare(pwd, hash, PWD_SECRET))
+      return next();
+  } catch (err) {
+    return next(err);
+  }
 
 }
 

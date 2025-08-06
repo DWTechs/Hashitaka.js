@@ -228,8 +228,12 @@ function encrypt(str: string, b64Secret: string): string {
  * @returns {boolean} `true` if the string matches the hash, `false` otherwise.
  */
 function compare(str: string, hash: string, b64Secret: string): boolean {
-	if (!isString(str, "!0") || !isString(hash, "!0") || !isBase64(b64Secret, true)) 
-    return false;
+
+  if (!isString(str, "!0") || !isString(hash, "!0")) 
+    throw new InvalidStringError();
+	
+  if (!isBase64(b64Secret, true))
+    throw new InvalidBase64SecretError();
 
   const secret = b64Decode(b64Secret, true);
   const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
