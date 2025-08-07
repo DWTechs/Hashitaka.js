@@ -1,10 +1,5 @@
 
-[![License: MIT](http- 📦 Only 1 dependency to check inputs variables
-- 🪶 Very lightweight
-- 🧪 Thoroughly tested
-- ⚡ EcmaScrypt module
-- 🔄 Works in Javascript and Typescript
-- 📝 Written in Typescriptg.shields.io/npm/l/@dwtechs/hashitaka.svg?color=brightgreen)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/npm/l/@dwtechs/hashitaka.svg?color=brightgreen)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/%40dwtechs%2Fhashitaka.svg)](https://www.npmjs.com/package/@dwtechs/hashitaka)
 [![last version release date](https://img.shields.io/github/release-date/DWTechs/Hashitaka.js)](https://www.npmjs.com/package/@dwtechs/hashitaka)
 ![Jest:coverage](https://img.shields.io/badge/Jest:coverage-100%25-brightgreen.svg)
