@@ -45,7 +45,6 @@ $ npm i @dwtechs/hashitaka
 
 ## Usage
 
-
 ### ES6 / TypeScript
 
 Example of use with Express.js using ES6 module format
@@ -104,6 +103,7 @@ export {
 };
 
 ```
+
 
 ## API Reference
 
@@ -291,9 +291,10 @@ try {
 | InvalidStringError | INVALID_STRING | 400 | str must be a non-empty string |
 | InvalidBase64SecretError | INVALID_BASE64_SECRET | 400 | b64Secret must be a base64 encoded string |
 
+
 ## Express.js
 
-You can use Hashitaka directly as Express.js middlewares using [@dwtechs/hashitaka-express library](https://www.npmjs.com/package/@dwtechs/hashitaka-express).
+You can use Hashitaka directly as Express.js middlewares using [@dwtechs/passken-express library](https://www.npmjs.com/package/@dwtechs/passken-express).
 This way you do not have to write express controllers yourself to use **Hashitaka**.
 
 
