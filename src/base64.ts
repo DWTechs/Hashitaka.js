@@ -43,6 +43,22 @@ function b64Encode(str: string, urlSafe = true): string {
 		
 }
 
+/**
+ * Adds padding characters to a base64 string to ensure proper length.
+ * 
+ * Base64 encoding requires the string length to be a multiple of 4 characters.
+ * This function calculates how many padding characters ('=') are needed and
+ * returns the appropriate padding string.
+ * 
+ * @param {string} str - The base64 string that may need padding.
+ * @returns {string} The padding string consisting of '=' characters, or empty string if no padding needed.
+ * 
+ * @example
+ * pad("YWJj");     // returns "=" (3 chars, needs 1 padding)
+ * pad("YWJjZA");   // returns "==" (6 chars, needs 2 padding)  
+ * pad("YWJjZGU");  // returns "=" (7 chars, needs 1 padding)
+ * pad("YWJjZGVm"); // returns "" (8 chars, no padding needed)
+ */
 function pad(str: string): string {
   return "=".repeat((4 - (str.length % 4)) % 4);
 }
