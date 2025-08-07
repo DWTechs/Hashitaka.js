@@ -133,6 +133,7 @@ function getDigest(): string {
 
 /**
  * Sets the hash function used for hashing.
+ * The list of available digests is returned by getDigests()
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
  * @returns {boolean} True if the hash function was successfully set; otherwise false.
@@ -226,6 +227,8 @@ function encrypt(str: string, b64Secret: string): string {
  * @param {string} hash - The hashed string to compare against.
  * @param {string} b64Secret - The base64 encoded secret used for hashing.
  * @returns {boolean} `true` if the string matches the hash, `false` otherwise.
+ * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
+ * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
  */
 function compare(str: string, hash: string, b64Secret: string): boolean {
 
@@ -250,8 +253,6 @@ export {
 	getDigest,
 	setDigest,
 	getDigests,
-  hash,
-  tse,
 	encrypt,
 	compare,
 };

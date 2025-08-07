@@ -69,6 +69,7 @@ function comparePwd(req, res, next) {
   try {
     if (compare(pwd, hash, PWD_SECRET))
       return next();
+    return next({statusCode: 401, message: "Invalid password" });
   } catch (err) {
     return next(err);
   }
@@ -106,7 +107,7 @@ export {
 
 ## API Reference
 
-```javascript
+```typescript
 
 // Default values
 let saltRnds = 12
@@ -152,7 +153,7 @@ function getDigest(): string {}
 
 /**
  * Sets the hash function used for hashing.
- * the list of available digests is returned by getDigests()
+ * The list of available digests is returned by getDigests()
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
  * @returns {boolean} True if the hash function was successfully set; otherwise false.
@@ -186,6 +187,8 @@ function encrypt( str: string,
  * @param {string} hash - The hashed string to compare against.
  * @param {string} b64Secret - The base64 encoded secret used for hashing.
  * @returns {boolean} true if the password matches the hash, false otherwise.
+ * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
+ * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
  */
 function compare( str: string, 
                   hash: string,
@@ -194,9 +197,9 @@ function compare( str: string,
 
 ```
 
-#### Secret
+### Secret
 
-```javascript
+```typescript
 
 /**
  * Generates a random string of the specified length, encoded in base64.
@@ -204,7 +207,35 @@ function compare( str: string,
  * @param {number} [length=32] - The length of the random string to generate. Defaults to 32 if not specified.
  * @returns {string} The generated random string encoded in base64.
  */
-randomSecret(length = 32): string
+rndB64Secret(length = 32): string
+
+```
+
+
+### Base64
+---
+
+```typescript
+
+/**
+ * Decodes a base64 encoded string.
+ *
+ * @param {string} str - The base64 encoded string to decode.
+ * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
+ * @returns {string} The decoded string in UTF-8 format.
+ * @throws {InvalidStringError} If `str` is not a non-empty string.
+ */
+function b64Decode(str: string, urlSafe = true): string;
+
+/**
+ * Encodes a given string into Base64 format.
+ * 
+ * @param {string} str - The string to be encoded.
+ * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. Defaults to true.
+ * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified to be URL safe.
+ * @throws {InvalidStringError} If `str` is not a non-empty string.
+ */
+function b64Encode(str: string, urlSafe = true): string;
 
 ```
 
