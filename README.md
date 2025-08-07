@@ -294,7 +294,7 @@ try {
 
 ## Express.js
 
-You can use Hashitaka directly as Express.js middlewares using [@dwtechs/passken-express library](https://www.npmjs.com/package/@dwtechs/passken-express).
+You can use Hashitaka directly as Express.js middlewares using [@dwtechs/passken-express library](https://www.npmjs.com/package/@dwtechs/passken-express) for password related middlewares and [@dwtechs/toker-express library](https://www.npmjs.com/package/@dwtechs/toker-express) for JWT related middlewares.
 This way you do not have to write express controllers yourself to use **Hashitaka**.
 
 
