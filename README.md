@@ -107,6 +107,8 @@ export {
 
 ## API Reference
 
+### Hash
+
 ```typescript
 
 // Default values
