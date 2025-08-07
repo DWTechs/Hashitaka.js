@@ -18,7 +18,7 @@
 
 ## Synopsis
 
-**[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is a Node.js library for secure hash generation, encryption, and comparison.
+**[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is an open source Node.js library for secure hash generation, encryption and comparison.
 
 - Only 1 dependency to check inputs variables
 - Very lightweight
@@ -78,7 +78,7 @@ function comparePwd(req, res, next) {
 
 
 /**
- * Generates a random password for a user and encrypts it.
+ * This express middleware generates a random password for a user and encrypts it.
  */
 function createPwd(req, res, next) {
 
@@ -257,7 +257,7 @@ HashitakaError (abstract base class)
 All error classes share these properties:
 
 - `message`: Human-readable error description
-- `code`: Machine-readable error code (e.g., "TOKEN_EXPIRED")
+- `code`: Human-readable error code (e.g., "TOKEN_EXPIRED")
 - `statusCode`: Suggested HTTP status code (e.g., 401)
 - `stack`: Error stack trace
 
