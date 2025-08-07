@@ -222,6 +222,7 @@ rndB64Secret(length = 32): string
 
 
 ### Base64
+
 ---
 
 ```typescript
