@@ -137,8 +137,10 @@ function encrypt(str, b64Secret) {
     return salt + pbkdf2(str, secret, salt).toString("hex");
 }
 function compare(str, hash, b64Secret) {
-    if (!isString(str, "!0") || !isString(hash, "!0") || !isBase64(b64Secret, true))
-        return false;
+    if (!isString(str, "!0") || !isString(hash, "!0"))
+        throw new InvalidStringError();
+    if (!isBase64(b64Secret, true))
+        throw new InvalidBase64SecretError();
     const secret = b64Decode(b64Secret, true);
     const salt = hash.slice(0, 32);
     const hashedStr = pbkdf2(str, secret, salt);
@@ -147,8 +149,8 @@ function compare(str, hash, b64Secret) {
 }
 
 const DEFAULT_KEY_LENGTH = 32;
-function create(length) {
-    const kl = isValidInteger(length, 1, 262144, false) ? length : DEFAULT_KEY_LENGTH;
+function create(len) {
+    const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LENGTH;
     return b64Encode(randomBytes(kl).toString("utf8"), true);
 }
 
