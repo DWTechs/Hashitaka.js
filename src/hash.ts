@@ -155,16 +155,31 @@ function getDigests(): string[] {
 	return digests;
 }
 
+
 /**
- * Generates a hash of the given string with the secret using the HMAC algorithm.
- * Also known as peppering.
+ * Generates a cryptographic hash (HMAC) of a string using a secret (pepper).
  *
- * @param {string} str - The string to be peppered.
- * @param {string} secret - The secret to be used as a pepper.
- * @return {string} The hashed pepper.
+ * This function uses the HMAC (Hash-based Message Authentication Code) algorithm
+ * with the configured digest (e.g., sha256) to create a fixed-length, irreversible
+ * hash of the input string. The secret acts as a pepper, adding an extra layer of
+ * security. This is useful for password storage, integrity checks, or any scenario
+ * where you need to verify data without revealing the original value.
+ *
+ * @param {string} str - The input string to hash (e.g., a password).
+ * @param {string} secret - The secret (pepper) to use for HMAC. Should be kept private.
+ * @returns {string} The base64url-encoded HMAC hash of the input string.
+ *
+ * @example
+ * const hashValue = hash("myPassword", "mySecretKey");
+ * // Store hashValue for later verification
+ *
+ * @remarks
+ * - Hashing is one-way: you cannot recover the original string from the hash.
+ * - Use for password verification, integrity checks, or digital signatures.
+ * - For encryption (two-way), use the `encrypt` function instead.
  */
 function hash(str: string, secret: string): string {
-	return createHmac(digest, secret).update(str).digest("base64url");
+  return createHmac(digest, secret).update(str).digest("base64url");
 }
 
 /**
@@ -180,69 +195,74 @@ function randomSalt(): string {
   return randomBytes(16).toString("hex");
 }
 
+
 /**
- * Generates a hash of the given string using the PBKDF2 algorithm.
+ * Derives a cryptographic key from a string using PBKDF2 (Password-Based Key Derivation Function 2).
  *
- * @param {string} str - The string to be hashed.
- * @param {string} secret - The secret to be used as a pepper.
- * @param {string} salt - The salt to be used.
- * @return {string} The hashed string.
+ * This function applies the PBKDF2 algorithm to the HMAC hash of the input string, using the provided
+ * secret (pepper) and salt. PBKDF2 is designed to be computationally intensive, making brute-force
+ * attacks more difficult. The number of iterations (salt rounds), key length, and digest algorithm
+ * are configurable in this module.
+ *
+ * @param {string} str - The input string to hash (e.g., a password).
+ * @param {string} secret - The secret (pepper) to use for HMAC.
+ * @param {string} salt - The salt to use for key derivation (should be random and unique per hash).
+ * @returns {Buffer} The derived key as a Buffer.
+ *
+ * @example
+ * const salt = randomSalt();
+ * const derivedKey = pbkdf2("myPassword", "mySecretKey", salt);
+ * // Store salt and derivedKey for later verification
+ *
+ * @remarks
+ * - PBKDF2 is recommended for password hashing and key derivation.
+ * - Use a unique, random salt for each password.
+ * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
  */
 function pbkdf2(str: string, secret: string, salt: string): Buffer {
-	return pbkdf2Sync(
-      hash(str, secret), 
-      salt, 
-      saltRnds, 
-      keyLen, 
-      digest);
+  return pbkdf2Sync(
+    hash(str, secret),
+    salt,
+    saltRnds,
+    keyLen,
+    digest
+  );
 }
 
 
 
 /**
- * Encrypts a string using a base64 encoded secret.
+ * Hashes (not true encryption) a string using a base64-encoded secret and PBKDF2.
  *
- * @param {string} pwd - The string to encrypt. Must be a non-empty string.
- * @param {string} b64Secret - The base64 encoded secret used for encryption. Must be a valid base64 encoded string.
- * @returns {string} The encrypted string as a hex string prefixed with a random salt.
+ * This function generates a salted, one-way hash of the input string using PBKDF2 with HMAC and a secret (pepper).
+ * The result is a hex string prefixed with a random salt. This is suitable for securely storing passwords or secrets
+ * that you do not need to recover (irreversible). The salt ensures that the same input produces different hashes each time.
+ *
+ * @param {string} str - The string to hash (e.g., a password). Must be a non-empty string.
+ * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
+ * @returns {string} The salted hash as a hex string, with the salt prepended.
+ *
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ *
+ * @example
+ * const secret = rndB64Secret();
+ * const hash = encrypt("myPassword", secret);
+ * // Store hash and secret for later verification
+ *
+ * @remarks
+ * - This is not reversible encryption; you cannot recover the original string.
+ * - Use for password storage or verification, not for data you need to decrypt.
+ * - For verification, use the `compare` function with the same secret.
  */
 function encrypt(str: string, b64Secret: string): string {
-	if (!isString(str, "!0")) 
+  if (!isString(str, "!0")) 
     throw new InvalidStringError();
-	
   if (!isBase64(b64Secret, true))
     throw new InvalidBase64SecretError();
-
   const secret = b64Decode(b64Secret, true);
-	const salt = randomSalt();
-	return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
-}
-
-/**
- * Compares a plaintext string with a hashed string using a secret.
- *
- * @param {string} str - The plaintext string to compare.
- * @param {string} hash - The hashed string to compare against.
- * @param {string} b64Secret - The base64 encoded secret used for hashing.
- * @returns {boolean} `true` if the string matches the hash, `false` otherwise.
- * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
- */
-function compare(str: string, hash: string, b64Secret: string): boolean {
-
-  if (!isString(str, "!0") || !isString(hash, "!0")) 
-    throw new InvalidStringError();
-	
-  if (!isBase64(b64Secret, true))
-    throw new InvalidBase64SecretError();
-
-  const secret = b64Decode(b64Secret, true);
-  const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
-	const hashedStr = pbkdf2(str, secret, salt); 
-	const storedHash = Buffer.from(hash.slice(32), "hex");
-  return tse(storedHash, hashedStr);
+  const salt = randomSalt();
+  return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
 }
 
 export {
@@ -254,5 +274,7 @@ export {
 	setDigest,
 	getDigests,
 	encrypt,
-	compare,
+  tse,
+  hash,
+  pbkdf2,
 };

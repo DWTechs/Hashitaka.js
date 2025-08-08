@@ -5,8 +5,11 @@ export {  getSaltRounds,
           getDigest,
           setDigest,
           getDigests,
+          hash,
+          pbkdf2,
           encrypt,
-          compare } from './hash';
+          tse } from './hash';
+export {  compare } from './compare';
 export {  create as rndB64Secret } from './secret';
 export {  b64Encode, 
           b64Decode } from './base64';

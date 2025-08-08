@@ -1,0 +1,49 @@
+import { tse, pbkdf2 } from "./hash";
+import { isString, isBase64 } from "@dwtechs/checkard";
+import { b64Decode } from "./base64.js";
+import { InvalidStringError, InvalidBase64SecretError } from "./errors.js";
+
+
+/**
+ * Verifies whether a plaintext string matches a previously hashed value using the same secret.
+ *
+ * This function extracts the salt from the stored hash, re-derives the hash from the provided plaintext
+ * and secret, and performs a timing-safe comparison. It is typically used for password verification or
+ * any scenario where you need to check if a user-provided value matches a stored hash.
+ *
+ * @param {string} str - The plaintext string to verify (e.g., a password).
+ * @param {string} hash - The stored hash to compare against (salt + hash, as produced by `encrypt`).
+ * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
+ * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
+ *
+ * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
+ * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ *
+ * @example
+ * const isValid = compare("userInput", storedHash, secret);
+ * if (isValid) {
+ *   // Password or secret is correct
+ * } else {
+ *   // Invalid password or secret
+ * }
+ *
+ * @remarks
+ * - Always use the same secret and salt extraction logic as when hashing.
+ * - Uses timing-safe comparison to prevent timing attacks.
+ * - For password verification, always return a boolean (never throw on mismatch).
+ */
+function compare(str: string, hash: string, b64Secret: string): boolean {
+  if (!isString(str, "!0") || !isString(hash, "!0")) 
+    throw new InvalidStringError();
+  if (!isBase64(b64Secret, true))
+    throw new InvalidBase64SecretError();
+  const secret = b64Decode(b64Secret, true);
+  const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
+  const hashedStr = pbkdf2(str, secret, salt); 
+  const storedHash = Buffer.from(hash.slice(32), "hex");
+  return tse(storedHash, hashedStr);
+}
+
+export {
+	compare,
+};

@@ -173,6 +173,57 @@ function setDigest(d: string): boolean {}
  */
 function getDigests(): string[] {}
 
+
+/**
+ * Timing-Safe Equality (TSE) function for comparing two buffers in constant time.
+ * 
+ * This function performs a cryptographically secure comparison of two buffers that takes
+ * the same amount of time regardless of where the buffers differ. This prevents timing
+ * attacks where an attacker could determine the correct value by measuring how long
+ * the comparison takes.
+ * 
+ * Regular string or buffer comparison (===, ==, Buffer.compare) can be vulnerable to
+ * timing attacks because they often return early when they find the first differing byte.
+ * This function uses Node.js's built-in `timingSafeEqual` which compares every byte
+ * regardless of differences found.
+ * 
+ * @param {Buffer} a - The first buffer to compare
+ * @param {Buffer} b - The second buffer to compare
+ * @returns {boolean} `true` if the buffers are identical, `false` otherwise
+ * @throws {HashLengthMismatchError} Throws when the buffers have different lengths - HTTP 400
+ * 
+ * // Use case: JWT signature verification (timing-attack resistant)
+ * const expectedSignature = Buffer.from(computedSignature);
+ * const providedSignature = Buffer.from(tokenSignature);
+ * const isValidSignature = tse(expectedSignature, providedSignature);
+ * 
+ * // Use case: Password hash comparison
+ * const storedHash = Buffer.from(hashedPassword, "hex");
+ * const computedHash = Buffer.from(newPasswordHash, "hex");
+ * const passwordMatches = tse(storedHash, computedHash);
+ * 
+ * // Example that throws HashLengthMismatchError:
+ * const shortBuffer = Buffer.from("abc");
+ * const longBuffer = Buffer.from("abcdef");
+ * tse(shortBuffer, longBuffer); // Throws HashLengthMismatchError
+ * ```
+ * 
+ * @security
+ * **Why timing-safe comparison matters:**
+ * - Prevents timing attacks on password verification
+ * - Protects JWT signature validation from side-channel attacks
+ * - Essential for any cryptographic comparison in security-sensitive contexts
+ * - Takes constant time regardless of input differences
+ * 
+ * **When to use:**
+ * - Comparing password hashes
+ * - Validating JWT signatures
+ * - Comparing any cryptographic values (MACs, tokens, etc.)
+ * - Any security-critical buffer comparison
+ */
+function tse(a: Buffer, b: Buffer): boolean {}
+
+
 /**
  * Encrypts a password using a base64 encoded secret.
  *
@@ -186,6 +237,58 @@ function getDigests(): string[] {}
 function encrypt( str: string, 
                   b64Secret: string
                 ): string | false {}
+
+
+/**
+ * Generates a cryptographic hash (HMAC) of a string using a secret (pepper).
+ *
+ * This function uses the HMAC (Hash-based Message Authentication Code) algorithm
+ * with the configured digest (e.g., sha256) to create a fixed-length, irreversible
+ * hash of the input string. The secret acts as a pepper, adding an extra layer of
+ * security. This is useful for password storage, integrity checks, or any scenario
+ * where you need to verify data without revealing the original value.
+ *
+ * @param {string} str - The input string to hash (e.g., a password).
+ * @param {string} secret - The secret (pepper) to use for HMAC. Should be kept private.
+ * @returns {string} The base64url-encoded HMAC hash of the input string.
+ *
+ * @example
+ * const hashValue = hash("myPassword", "mySecretKey");
+ * // Store hashValue for later verification
+ *
+ * @remarks
+ * - Hashing is one-way: you cannot recover the original string from the hash.
+ * - Use for password verification, integrity checks, or digital signatures.
+ * - For encryption (two-way), use the `encrypt` function instead.
+ */
+function hash(str: string, secret: string): string {}
+
+
+/**
+ * Derives a cryptographic key from a string using PBKDF2 (Password-Based Key Derivation Function 2).
+ *
+ * This function applies the PBKDF2 algorithm to the HMAC hash of the input string, using the provided
+ * secret (pepper) and salt. PBKDF2 is designed to be computationally intensive, making brute-force
+ * attacks more difficult. The number of iterations (salt rounds), key length, and digest algorithm
+ * are configurable in this module.
+ *
+ * @param {string} str - The input string to hash (e.g., a password).
+ * @param {string} secret - The secret (pepper) to use for HMAC.
+ * @param {string} salt - The salt to use for key derivation (should be random and unique per hash).
+ * @returns {Buffer} The derived key as a Buffer.
+ *
+ * @example
+ * const salt = randomSalt();
+ * const derivedKey = pbkdf2("myPassword", "mySecretKey", salt);
+ * // Store salt and derivedKey for later verification
+ *
+ * @remarks
+ * - PBKDF2 is recommended for password hashing and key derivation.
+ * - Use a unique, random salt for each password.
+ * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
+ */
+function pbkdf2(str: string, secret: string, salt: string): Buffer {}
+
 
 /**
  * Compares a plaintext string with a hashed string using a secret.
