@@ -1,4 +1,4 @@
-import { encrypt, rndB64Secret } from "../dist/hashitaka.js";
+import { encrypt, rndB64Secret, InvalidStringError, InvalidBase64SecretError } from "../dist/hashitaka.js";
 
 describe("encrypt", () => {
 	const password = "mySecret!/;6(A)Pwd";
@@ -11,23 +11,23 @@ describe("encrypt", () => {
 	});
 
 	test("Throw error when password is empty", () => {
-		expect(() => {encrypt("", validSecret)}).toThrow();
+		expect(() => {encrypt("", validSecret)}).toThrow(InvalidStringError);
 	});
 
 	test("Throw error when secret is empty", () => {
-		expect(() => {encrypt(password, "")}).toThrow();
+		expect(() => {encrypt(password, "")}).toThrow(InvalidBase64SecretError);
 	});
 
 	test("Throw error when secret is invalid", () => {
-		expect(() => {encrypt(password, InvalidSecret)}).toThrow();
+		expect(() => {encrypt(password, InvalidSecret)}).toThrow(InvalidBase64SecretError);
 	});
 
 	test("Throw error when password is not a string", () => {
-		expect(() => {encrypt(123, validSecret)}).toThrow();
+		expect(() => {encrypt(123, validSecret)}).toThrow(InvalidStringError);
 	});
 
 	test("Throw error when secret is not a string", () => {
-		expect(() => {encrypt(password, 123)}).toThrow();
+		expect(() => {encrypt(password, 123)}).toThrow(InvalidStringError);
 	});
 
 	test("generates different hashes for the same password and secret", () => {
@@ -37,9 +37,9 @@ describe("encrypt", () => {
 	});
 
 	test("Throw error for non-string inputs", () => {
-		expect(() => {encrypt(null, validSecret)}).toThrow();
-		expect(() => {encrypt(password, null)}).toThrow();
-		expect(() => {encrypt({}, validSecret)}).toThrow();
-		expect(() => {encrypt(password, [])}).toThrow();
+		expect(() => {encrypt(null, validSecret)}).toThrow(InvalidStringError);
+		expect(() => {encrypt(password, null)}).toThrow(InvalidBase64SecretError);
+		expect(() => {encrypt({}, validSecret)}).toThrow(InvalidStringError);
+		expect(() => {encrypt(password, [])}).toThrow(InvalidBase64SecretError);
 	});
 });
