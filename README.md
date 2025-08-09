@@ -248,9 +248,7 @@ function tse(a: Buffer, b: Buffer): boolean {}
  * - Use for password storage or verification, not for data you need to decrypt.
  * - For verification, use the `compare` function with the same secret.
  */
-function encrypt( str: string, 
-                  b64Secret: string
-                ): string | false {}
+function encrypt( str: string, b64Secret: string ): string | false {}
 
 
 /**
@@ -314,10 +312,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
  * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
  * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
  */
-function compare( str: string, 
-                  hash: string,
-                  b64Secret: string
-                ): boolean {}
+function compare( str: string, hash: string, b64Secret: string ): boolean {}
 
 ```
 
