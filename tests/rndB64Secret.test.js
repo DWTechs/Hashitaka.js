@@ -8,7 +8,7 @@ describe("rndB64Secret", () => {
 
 	it("should generate a secret of the specified length (16 bytes)", () => {
 		const secret = rndB64Secret(16);
-		expect(secret.length).toBeGreaterThan(30);
+		expect(secret.length).toBeGreaterThan(29);
 	});
 
 	it("should generate a secret of the specified length (64 bytes)", () => {

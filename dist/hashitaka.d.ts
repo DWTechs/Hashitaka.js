@@ -58,6 +58,9 @@ declare function compare(str: string, hash: string, b64Secret: string): boolean;
 declare function rndB64Secret(len?: number): string;
 declare function b64Decode(str: string, urlSafe?: boolean): string;
 declare function b64Encode(str: string, urlSafe?: boolean): string;
+declare function tse(a: Buffer, b: Buffer): boolean;
+declare function hash(str: string, secret: string): string;
+declare function pbkdf2(str: string, secret: string, salt: string): Buffer;
 
 export { 
   getSaltRounds,
@@ -71,5 +74,8 @@ export {
   compare,
   rndB64Secret,
   b64Encode,
-  b64Decode
+  b64Decode,
+  pbkdf2,
+  tse,
+  hash,
 };
