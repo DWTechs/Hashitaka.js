@@ -225,14 +225,28 @@ function tse(a: Buffer, b: Buffer): boolean {}
 
 
 /**
- * Encrypts a password using a base64 encoded secret.
+ * Hashes (not true encryption) a string using a base64-encoded secret and PBKDF2.
  *
- * @param {string} str - The password to encrypt. Must be a non-empty string.
- * @param {string} b64Secret - The base64 encoded secret used for encryption. 
- * Must be a valid base64 encoded string.
- * @returns {string} The encrypted password as a hex string prefixed with a random salt.
+ * This function generates a salted, one-way hash of the input string using PBKDF2 with HMAC and a secret (pepper).
+ * The result is a hex string prefixed with a random salt. This is suitable for securely storing passwords or secrets
+ * that you do not need to recover (irreversible). The salt ensures that the same input produces different hashes each time.
+ *
+ * @param {string} str - The string to hash (e.g., a password). Must be a non-empty string.
+ * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
+ * @returns {string} The salted hash as a hex string, with the salt prepended.
+ *
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ *
+ * @example
+ * const secret = rndB64Secret();
+ * const hash = encrypt("myPassword", secret);
+ * // Store hash and secret for later verification
+ *
+ * @remarks
+ * - This is not reversible encryption; you cannot recover the original string.
+ * - Use for password storage or verification, not for data you need to decrypt.
+ * - For verification, use the `compare` function with the same secret.
  */
 function encrypt( str: string, 
                   b64Secret: string
@@ -258,7 +272,7 @@ function encrypt( str: string,
  *
  * @remarks
  * - Hashing is one-way: you cannot recover the original string from the hash.
- * - Use for password verification, integrity checks, or digital signatures.
+ * - Use for integrity checks and digital signatures.
  * - For encryption (two-way), use the `encrypt` function instead.
  */
 function hash(str: string, secret: string): string {}

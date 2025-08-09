@@ -175,7 +175,7 @@ function getDigests(): string[] {
  *
  * @remarks
  * - Hashing is one-way: you cannot recover the original string from the hash.
- * - Use for password verification, integrity checks, or digital signatures.
+ * - Use for integrity checks and digital signatures.
  * - For encryption (two-way), use the `encrypt` function instead.
  */
 function hash(str: string, secret: string): string {
@@ -228,7 +228,6 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
     digest
   );
 }
-
 
 
 /**

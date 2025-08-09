@@ -24,7 +24,7 @@ SOFTWARE.
 https://github.com/DWTechs/Hashitaka.js
 */
 
-import { getHashes, timingSafeEqual, randomBytes, pbkdf2Sync, createHmac } from 'node:crypto';
+import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { isString, isValidInteger, isIn, isBase64 } from '@dwtechs/checkard';
 
 const HASHITAKA_PREFIX = "Hashitaka: ";
@@ -136,6 +136,7 @@ function encrypt(str, b64Secret) {
     const salt = randomSalt();
     return salt + pbkdf2(str, secret, salt).toString("hex");
 }
+
 function compare(str, hash, b64Secret) {
     if (!isString(str, "!0") || !isString(hash, "!0"))
         throw new InvalidStringError();
@@ -154,4 +155,4 @@ function create(len) {
     return b64Encode(randomBytes(kl).toString("utf8"), true);
 }
 
-export { HashitakaError, InvalidBase64SecretError, InvalidStringError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds };
+export { HashitakaError, InvalidBase64SecretError, InvalidStringError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, hash, pbkdf2, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds, tse };
