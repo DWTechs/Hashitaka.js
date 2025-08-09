@@ -332,7 +332,7 @@ function compare( str: string,
  * Defaults to 32 if not specified.
  * @returns {string} The generated random string encoded in base64.
  */
-rndB64Secret(length = 32): string
+function rndB64Secret(length = 32): string {}
 
 ```
 
@@ -352,7 +352,7 @@ rndB64Secret(length = 32): string
  * @returns {string} The decoded string in UTF-8 format.
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
-function b64Decode(str: string, urlSafe = true): string;
+function b64Decode(str: string, urlSafe = true): string {}
 
 /**
  * Encodes a given string into Base64 format.
@@ -364,7 +364,7 @@ function b64Decode(str: string, urlSafe = true): string;
  * to be URL safe.
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
-function b64Encode(str: string, urlSafe = true): string;
+function b64Encode(str: string, urlSafe = true): string {}
 
 ```
 
