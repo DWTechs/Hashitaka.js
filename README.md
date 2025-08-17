@@ -20,7 +20,7 @@
 
 **[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is an open source Node.js library for secure hash generation, encryption and comparison.
 
-- 📦 Only 1 dependency to check inputs variables
+- 📦 Only 2 dependencies to check inputs variables and log debug infos
 - 🪶 Very lightweight
 - 🧪 Thoroughly tested
 - 🚚 Shipped as EcmaScrypt module
