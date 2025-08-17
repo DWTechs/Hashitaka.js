@@ -1,5 +1,7 @@
+import { log } from "@dwtechs/winstan";
 import { isString } from "@dwtechs/checkard";
 import { InvalidStringError } from "./errors.js";
+import { LOGS_PREFIX } from "./constants";
 
 /**
  * Decodes a base64 encoded string.
@@ -10,6 +12,9 @@ import { InvalidStringError } from "./errors.js";
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
 function b64Decode(str: string, urlSafe = true): string {
+
+  log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
+
   if (!isString(str, "!0")) 
     throw new InvalidStringError();
 
@@ -30,6 +35,9 @@ function b64Decode(str: string, urlSafe = true): string {
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {
+
+  log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);
+
   if (!isString(str, "!0")) 
     throw new InvalidStringError();
 

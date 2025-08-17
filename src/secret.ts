@@ -1,6 +1,8 @@
+import { log } from "@dwtechs/winstan";
 import { randomBytes } from "node:crypto";
 import { isValidInteger } from "@dwtechs/checkard";
 import { b64Encode } from "./base64.js";
+import { LOGS_PREFIX } from "./constants";
 
 const DEFAULT_KEY_LENGTH = 32;
 
@@ -11,6 +13,7 @@ const DEFAULT_KEY_LENGTH = 32;
  * @returns {string} The generated random string encoded in base64.
  */
 function create(len: number): string {
+	log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
 	const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LENGTH;
 	return b64Encode(randomBytes(kl).toString("utf8"), true);
 }

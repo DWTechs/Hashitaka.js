@@ -24,6 +24,7 @@ SOFTWARE.
 https://github.com/DWTechs/Hashitaka.js
 */
 
+import { log } from '@dwtechs/winstan';
 import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { isString, isValidInteger, isIn, isBase64 } from '@dwtechs/checkard';
 
@@ -58,7 +59,10 @@ class InvalidBase64SecretError extends HashitakaError {
     }
 }
 
+const LOGS_PREFIX = "Hashitaka: ";
+
 function b64Decode(str, urlSafe = true) {
+    log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
     if (!isString(str, "!0"))
         throw new InvalidStringError();
     if (urlSafe)
@@ -66,6 +70,7 @@ function b64Decode(str, urlSafe = true) {
     return Buffer.from(str + pad(str), "base64").toString("utf8");
 }
 function b64Encode(str, urlSafe = true) {
+    log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);
     if (!isString(str, "!0"))
         throw new InvalidStringError();
     let b64 = Buffer.from(str).toString("base64");
@@ -84,6 +89,7 @@ let digest = "sha256";
 let keyLen = 64;
 let saltRnds = 12;
 function tse(a, b) {
+    log.debug(`${LOGS_PREFIX}Comparing buffers (lengths: ${a.length}, ${b.length})`);
     if (a.length !== b.length)
         throw new HashLengthMismatchError();
     return timingSafeEqual(a, b);
@@ -92,6 +98,7 @@ function getSaltRounds() {
     return saltRnds;
 }
 function setSaltRounds(rnds) {
+    log.debug(`${LOGS_PREFIX}Setting salt rounds to ${rnds}`);
     if (!isValidInteger(rnds, 12, 100, true))
         return false;
     saltRnds = rnds;
@@ -101,6 +108,7 @@ function getKeyLen() {
     return keyLen;
 }
 function setKeyLen(len) {
+    log.debug(`${LOGS_PREFIX}Setting key length to ${len}`);
     if (!isValidInteger(len, 2, 256, true))
         return false;
     keyLen = len;
@@ -110,6 +118,7 @@ function getDigest() {
     return digest;
 }
 function setDigest(func) {
+    log.debug(`${LOGS_PREFIX}Setting hash function to ${func}`);
     if (!isIn(digests, func))
         return false;
     digest = func;
@@ -119,15 +128,19 @@ function getDigests() {
     return digests;
 }
 function hash(str, secret) {
+    log.debug(`${LOGS_PREFIX}Hashing str='${str}' using secret='${secret}'`);
     return createHmac(digest, secret).update(str).digest("base64url");
 }
 function randomSalt() {
+    log.debug(`${LOGS_PREFIX}Generating random salt`);
     return randomBytes(16).toString("hex");
 }
 function pbkdf2(str, secret, salt) {
+    log.debug(`${LOGS_PREFIX}Deriving key using PBKDF2 (salt=${salt})`);
     return pbkdf2Sync(hash(str, secret), salt, saltRnds, keyLen, digest);
 }
 function encrypt(str, b64Secret) {
+    log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
     if (!isString(str, "!0"))
         throw new InvalidStringError();
     if (!isBase64(b64Secret, true))
@@ -138,6 +151,7 @@ function encrypt(str, b64Secret) {
 }
 
 function compare(str, hash, b64Secret) {
+    log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
     if (!isString(str, "!0") || !isString(hash, "!0"))
         throw new InvalidStringError();
     if (!isBase64(b64Secret, true))
@@ -151,6 +165,7 @@ function compare(str, hash, b64Secret) {
 
 const DEFAULT_KEY_LENGTH = 32;
 function create(len) {
+    log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
     const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LENGTH;
     return b64Encode(randomBytes(kl).toString("utf8"), true);
 }

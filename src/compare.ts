@@ -1,8 +1,9 @@
-import { tse, pbkdf2 } from "./hash";
+import { log } from "@dwtechs/winstan";
 import { isString, isBase64 } from "@dwtechs/checkard";
+import { tse, pbkdf2 } from "./hash";
 import { b64Decode } from "./base64.js";
 import { InvalidStringError, InvalidBase64SecretError } from "./errors.js";
-
+import { LOGS_PREFIX } from "./constants";
 
 /**
  * Verifies whether a plaintext string matches a previously hashed value using the same secret.
@@ -33,10 +34,14 @@ import { InvalidStringError, InvalidBase64SecretError } from "./errors.js";
  * - For password verification, always return a boolean (never throw on mismatch).
  */
 function compare(str: string, hash: string, b64Secret: string): boolean {
-  if (!isString(str, "!0") || !isString(hash, "!0")) 
+
+  log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
+
+  if (!isString(str, "!0") || !isString(hash, "!0"))
     throw new InvalidStringError();
   if (!isBase64(b64Secret, true))
     throw new InvalidBase64SecretError();
+  
   const secret = b64Decode(b64Secret, true);
   const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
   const hashedStr = pbkdf2(str, secret, salt); 

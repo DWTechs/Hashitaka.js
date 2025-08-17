@@ -1,4 +1,8 @@
 
+# 0.2.2 (Aug 17th 2025)
+
+- Add debug logs for all exported functions
+
 # 0.2.1 (Aug 10th 2025)
 
 - fix Typescript declaration file for **encrypt()**, **hash()**, **pbkdf2()** and **tse()** functions

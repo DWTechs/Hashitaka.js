@@ -1,3 +1,4 @@
+import { log } from "@dwtechs/winstan";
 import { randomBytes, 
          createHmac,
          getHashes,
@@ -15,6 +16,7 @@ import {
   InvalidStringError,
   InvalidBase64SecretError
 } from "./errors.js";
+import { LOGS_PREFIX } from "./constants";
 
 const digests = getHashes();
 let digest = "sha256";
@@ -69,6 +71,9 @@ let saltRnds = 12;
  * - Any security-critical buffer comparison
  */
 function tse(a: Buffer, b: Buffer): boolean {
+
+  log.debug(`${LOGS_PREFIX}Comparing buffers (lengths: ${a.length}, ${b.length})`);
+
   if (a.length !== b.length)
     throw new HashLengthMismatchError();  
   return timingSafeEqual(a, b);
@@ -91,6 +96,7 @@ function getSaltRounds(): number {
  * @returns {boolean} True if the salt rounds were successfully set, otherwise false.
  */
 function setSaltRounds(rnds: number): boolean {
+  log.debug(`${LOGS_PREFIX}Setting salt rounds to ${rnds}`);
 	if (!isValidInteger(rnds, 12, 100, true)) 
     return false;
 
@@ -115,6 +121,7 @@ function getKeyLen(): number {
  * @returns {boolean} True if the key length was successfully set; otherwise false.
  */
 function setKeyLen(len: number): boolean {
+  log.debug(`${LOGS_PREFIX}Setting key length to ${len}`);
 	if (!isValidInteger(len, 2, 256, true)) 
     return false;
 
@@ -139,6 +146,7 @@ function getDigest(): string {
  * @returns {boolean} True if the hash function was successfully set; otherwise false.
  */
 function setDigest(func: string): boolean {
+  log.debug(`${LOGS_PREFIX}Setting hash function to ${func}`);
 	if (!isIn(digests, func)) 
     return false;
 
@@ -179,6 +187,9 @@ function getDigests(): string[] {
  * - For encryption (two-way), use the `encrypt` function instead.
  */
 function hash(str: string, secret: string): string {
+
+  log.debug(`${LOGS_PREFIX}Hashing str='${str}' using secret='${secret}'`);
+
   return createHmac(digest, secret).update(str).digest("base64url");
 }
 
@@ -192,6 +203,9 @@ function hash(str: string, secret: string): string {
  * // salt might be: '9f86d081884c7d659a2feaa0c55ad015'
  */
 function randomSalt(): string {
+
+  log.debug(`${LOGS_PREFIX}Generating random salt`);
+
   return randomBytes(16).toString("hex");
 }
 
@@ -220,6 +234,9 @@ function randomSalt(): string {
  * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
  */
 function pbkdf2(str: string, secret: string, salt: string): Buffer {
+
+  log.debug(`${LOGS_PREFIX}Deriving key using PBKDF2 (salt=${salt})`);
+
   return pbkdf2Sync(
     hash(str, secret),
     salt,
@@ -255,10 +272,14 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * - For verification, use the `compare` function with the same secret.
  */
 function encrypt(str: string, b64Secret: string): string {
+  
+  log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
+  
   if (!isString(str, "!0")) 
     throw new InvalidStringError();
   if (!isBase64(b64Secret, true))
     throw new InvalidBase64SecretError();
+  
   const secret = b64Decode(b64Secret, true);
   const salt = randomSalt();
   return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
