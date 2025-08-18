@@ -1,3 +1,6 @@
+# 0.2.3 (Aug 18th 2025)
+
+- Base64 secrets sent to encrypt() and compare() functions does not need to be url-safe anymore
 
 # 0.2.2 (Aug 17th 2025)
 

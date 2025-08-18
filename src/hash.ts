@@ -277,7 +277,7 @@ function encrypt(str: string, b64Secret: string): string {
   
   if (!isString(str, "!0")) 
     throw new InvalidStringError();
-  if (!isBase64(b64Secret, true))
+  if (!isBase64(b64Secret, false))
     throw new InvalidBase64SecretError();
   
   const secret = b64Decode(b64Secret, true);

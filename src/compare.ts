@@ -39,7 +39,7 @@ function compare(str: string, hash: string, b64Secret: string): boolean {
 
   if (!isString(str, "!0") || !isString(hash, "!0"))
     throw new InvalidStringError();
-  if (!isBase64(b64Secret, true))
+  if (!isBase64(b64Secret, false))
     throw new InvalidBase64SecretError();
   
   const secret = b64Decode(b64Secret, true);
