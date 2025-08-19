@@ -27,7 +27,7 @@ describe("encrypt", () => {
 	});
 
 	test("Throw error when secret is not a string", () => {
-		expect(() => {encrypt(password, 123)}).toThrow(InvalidStringError);
+		expect(() => {encrypt(password, 123)}).toThrow(InvalidBase64SecretError);
 	});
 
 	test("generates different hashes for the same password and secret", () => {

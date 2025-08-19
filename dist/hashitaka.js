@@ -143,7 +143,7 @@ function encrypt(str, b64Secret) {
     log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
     if (!isString(str, "!0"))
         throw new InvalidStringError();
-    if (!isBase64(b64Secret, true))
+    if (!isBase64(b64Secret, false))
         throw new InvalidBase64SecretError();
     const secret = b64Decode(b64Secret, true);
     const salt = randomSalt();
@@ -154,7 +154,7 @@ function compare(str, hash, b64Secret) {
     log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
     if (!isString(str, "!0") || !isString(hash, "!0"))
         throw new InvalidStringError();
-    if (!isBase64(b64Secret, true))
+    if (!isBase64(b64Secret, false))
         throw new InvalidBase64SecretError();
     const secret = b64Decode(b64Secret, true);
     const salt = hash.slice(0, 32);
@@ -167,7 +167,7 @@ const DEFAULT_KEY_LENGTH = 32;
 function create(len) {
     log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
     const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LENGTH;
-    return b64Encode(randomBytes(kl).toString("utf8"), true);
+    return b64Encode(randomBytes(kl).toString("utf8"), false);
 }
 
 export { HashitakaError, InvalidBase64SecretError, InvalidStringError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, hash, pbkdf2, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds, tse };
