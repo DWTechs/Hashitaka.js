@@ -4,7 +4,7 @@ describe("compare", () => {
 	const password = "mySecret!/;6(A)Pwd";
 	const wrongPassword = "wr0ngPa55word!";
 	const emptyPassword = "";
-	const secret = "8zYSoxUV36qy8tiIGytsA7qPdFecywiQs0sHBze_Skg";
+	const secret = "8zYSoxUV36qy8tiIGytsA7qPdFecywiQs0sHBze/Skg=";
 	const hashedPassword = encrypt(password, secret);
   const hashedPassword2 = encrypt(password, secret);
 	const otherHashedPassword = encrypt(password, secret);
