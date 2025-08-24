@@ -28,6 +28,29 @@ import { log } from '@dwtechs/winstan';
 import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { isString, isValidInteger, isIn, isBase64 } from '@dwtechs/checkard';
 
+const LOGS_PREFIX = "Hashitaka: ";
+
+function b64Decode(str, urlSafe = true) {
+    log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
+    isString(str, "!0", null, true);
+    if (urlSafe)
+        str = str.replace(/-/g, "+").replace(/_/g, "/");
+    return Buffer.from(str + pad(str), "base64").toString("utf8");
+}
+function b64Encode(str, urlSafe = true) {
+    log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);
+    isString(str, "!0", null, true);
+    let b64 = Buffer.from(str).toString("base64");
+    if (urlSafe)
+        b64 = b64.replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    return b64;
+}
+function pad(str) {
+    return "=".repeat((4 - (str.length % 4)) % 4);
+}
+
 const HASHITAKA_PREFIX = "Hashitaka: ";
 class HashitakaError extends Error {
     constructor(message) {
@@ -43,45 +66,6 @@ class HashLengthMismatchError extends HashitakaError {
         this.code = "HASH_LENGTH_MISMATCH";
         this.statusCode = 400;
     }
-}
-class InvalidStringError extends HashitakaError {
-    constructor(message = `${HASHITAKA_PREFIX}str must be a non-empty string`) {
-        super(message);
-        this.code = "INVALID_STRING";
-        this.statusCode = 400;
-    }
-}
-class InvalidBase64SecretError extends HashitakaError {
-    constructor(message = `${HASHITAKA_PREFIX}b64Secret must be a base64 encoded string`) {
-        super(message);
-        this.code = "INVALID_BASE64_SECRET";
-        this.statusCode = 400;
-    }
-}
-
-const LOGS_PREFIX = "Hashitaka: ";
-
-function b64Decode(str, urlSafe = true) {
-    log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
-    if (!isString(str, "!0"))
-        throw new InvalidStringError();
-    if (urlSafe)
-        str = str.replace(/-/g, "+").replace(/_/g, "/");
-    return Buffer.from(str + pad(str), "base64").toString("utf8");
-}
-function b64Encode(str, urlSafe = true) {
-    log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);
-    if (!isString(str, "!0"))
-        throw new InvalidStringError();
-    let b64 = Buffer.from(str).toString("base64");
-    if (urlSafe)
-        b64 = b64.replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
-    return b64;
-}
-function pad(str) {
-    return "=".repeat((4 - (str.length % 4)) % 4);
 }
 
 const digests = getHashes();
@@ -99,8 +83,7 @@ function getSaltRounds() {
 }
 function setSaltRounds(rnds) {
     log.debug(`${LOGS_PREFIX}Setting salt rounds to ${rnds}`);
-    if (!isValidInteger(rnds, 12, 100, true))
-        return false;
+    isValidInteger(rnds, 12, 100, true, true);
     saltRnds = rnds;
     return true;
 }
@@ -109,8 +92,7 @@ function getKeyLen() {
 }
 function setKeyLen(len) {
     log.debug(`${LOGS_PREFIX}Setting key length to ${len}`);
-    if (!isValidInteger(len, 2, 256, true))
-        return false;
+    isValidInteger(len, 2, 256, true, true);
     keyLen = len;
     return true;
 }
@@ -119,8 +101,7 @@ function getDigest() {
 }
 function setDigest(func) {
     log.debug(`${LOGS_PREFIX}Setting hash function to ${func}`);
-    if (!isIn(digests, func))
-        return false;
+    isIn(digests, func, undefined, true);
     digest = func;
     return true;
 }
@@ -141,10 +122,8 @@ function pbkdf2(str, secret, salt) {
 }
 function encrypt(str, b64Secret) {
     log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
-    if (!isString(str, "!0"))
-        throw new InvalidStringError();
-    if (!isBase64(b64Secret, false))
-        throw new InvalidBase64SecretError();
+    isString(str, "!0", null, true);
+    isBase64(b64Secret, false, true);
     const secret = b64Decode(b64Secret, true);
     const salt = randomSalt();
     return salt + pbkdf2(str, secret, salt).toString("hex");
@@ -152,10 +131,9 @@ function encrypt(str, b64Secret) {
 
 function compare(str, hash, b64Secret) {
     log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
-    if (!isString(str, "!0") || !isString(hash, "!0"))
-        throw new InvalidStringError();
-    if (!isBase64(b64Secret, false))
-        throw new InvalidBase64SecretError();
+    isString(str, "!0", null, true);
+    isString(hash, "!0", null, true);
+    isBase64(b64Secret, false, true);
     const secret = b64Decode(b64Secret, true);
     const salt = hash.slice(0, 32);
     const hashedStr = pbkdf2(str, secret, salt);
@@ -163,11 +141,11 @@ function compare(str, hash, b64Secret) {
     return tse(storedHash, hashedStr);
 }
 
-const DEFAULT_KEY_LENGTH = 32;
+const DEFAULT_KEY_LEN = 32;
 function create(len) {
     log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
-    const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LENGTH;
+    const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LEN;
     return b64Encode(randomBytes(kl).toString("utf8"), false);
 }
 
-export { HashitakaError, InvalidBase64SecretError, InvalidStringError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, hash, pbkdf2, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds, tse };
+export { HashitakaError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, hash, pbkdf2, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds, tse };

@@ -14,7 +14,5 @@ export {  create as rndB64Secret } from './secret';
 export {  b64Encode, 
           b64Decode } from './base64';
 export {  
-          HashitakaError,
-          InvalidStringError,
-          InvalidBase64SecretError
+          HashitakaError
         } from './errors';

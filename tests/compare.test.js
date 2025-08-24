@@ -1,4 +1,4 @@
-import { compare, encrypt, InvalidStringError, InvalidBase64SecretError } from "../dist/hashitaka.js";
+import { compare, encrypt } from "../dist/hashitaka.js";
 
 describe("compare", () => {
 	const password = "mySecret!/;6(A)Pwd";
@@ -42,19 +42,19 @@ describe("compare", () => {
 		expect(otherHashedPassword).not.toBe(anotherHashedPassword);
 	});
 
-	test("returns false when comparing with wrong password", () => {
+	test("Returns false when comparing with wrong password", () => {
 		expect(compare(wrongPassword, hashedPassword, secret)).toBe(false);
 	});
 
-	test("throws InvalidStringError when comparing with an empty password", () => {
-		expect(() => compare(emptyPassword, hashedPassword, secret)).toThrow(InvalidStringError);
+	test("throws error when comparing with an empty password", () => {
+		expect(() => compare(emptyPassword, hashedPassword, secret)).toThrow();
 	});
 
-	test("throws InvalidBase64SecretError when secret is empty", () => {
-		expect(() => compare(password, hashedPassword, "")).toThrow(InvalidBase64SecretError);
+	test("throws error when secret is empty", () => {
+		expect(() => compare(password, hashedPassword, "")).toThrow();
 	});
 
-	test("throws InvalidStringError when hashed password is empty", () => {
-		expect(() => compare(password, "", secret)).toThrow(InvalidStringError);
+	test("throws error when hashed password is empty", () => {
+		expect(() => compare(password, "", secret)).toThrow();
 	});
 });

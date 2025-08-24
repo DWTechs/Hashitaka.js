@@ -10,16 +10,6 @@ export class HashLengthMismatchError extends HashitakaError {
   readonly statusCode: number;
 }
 
-export class InvalidStringError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
-}
-
-export class InvalidBase64SecretError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
-}
-
 declare function getSaltRounds(): number;
 declare function setSaltRounds(rnds: number): boolean;
 declare function getKeyLen(): number;

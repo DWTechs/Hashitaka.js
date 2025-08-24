@@ -10,36 +10,36 @@ describe("encrypt", () => {
 		expect(typeof encrypt(password, validSecret)).toBe("string");
 	});
 
-	test("Throw error when password is empty", () => {
-		expect(() => {encrypt("", validSecret)}).toThrow(InvalidStringError);
-	});
+		test("throws error when password is empty", () => {
+			expect(() => encrypt("", validSecret)).toThrow();
+		});
 
-	test("Throw error when secret is empty", () => {
-		expect(() => {encrypt(password, "")}).toThrow(InvalidBase64SecretError);
-	});
+		test("throws error when secret is empty", () => {
+			expect(() => encrypt(password, "")).toThrow();
+		});
 
-	test("Throw error when secret is invalid", () => {
-		expect(() => {encrypt(password, InvalidSecret)}).toThrow(InvalidBase64SecretError);
-	});
+		test("throws error when secret is invalid", () => {
+			expect(() => encrypt(password, InvalidSecret)).toThrow();
+		});
 
-	test("Throw error when password is not a string", () => {
-		expect(() => {encrypt(123, validSecret)}).toThrow(InvalidStringError);
-	});
+		test("throws error when password is not a string", () => {
+			expect(() => encrypt(123, validSecret)).toThrow();
+		});
 
-	test("Throw error when secret is not a string", () => {
-		expect(() => {encrypt(password, 123)}).toThrow(InvalidBase64SecretError);
-	});
+		test("throws error when secret is not a string", () => {
+			expect(() => encrypt(password, 123)).toThrow();
+		});
 
-	test("generates different hashes for the same password and secret", () => {
-		const hash1 = encrypt(password, validSecret);
-		const hash2 = encrypt(password, validSecret);
-		expect(hash1).not.toBe(hash2);
-	});
+		test("generates different hashes for the same password and secret", () => {
+			const hash1 = encrypt(password, validSecret);
+			const hash2 = encrypt(password, validSecret);
+			expect(hash1).not.toBe(hash2);
+		});
 
-	test("Throw error for non-string inputs", () => {
-		expect(() => {encrypt(null, validSecret)}).toThrow(InvalidStringError);
-		expect(() => {encrypt(password, null)}).toThrow(InvalidBase64SecretError);
-		expect(() => {encrypt({}, validSecret)}).toThrow(InvalidStringError);
-		expect(() => {encrypt(password, [])}).toThrow(InvalidBase64SecretError);
-	});
+		test("throws error for non-string inputs", () => {
+			expect(() => encrypt(null, validSecret)).toThrow();
+			expect(() => encrypt(password, null)).toThrow();
+			expect(() => encrypt({}, validSecret)).toThrow();
+			expect(() => encrypt(password, [])).toThrow();
+		});
 });

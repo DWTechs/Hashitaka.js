@@ -1,6 +1,6 @@
 import { log } from "@dwtechs/winstan";
 import { isString } from "@dwtechs/checkard";
-import { InvalidStringError } from "./errors.js";
+// import { InvalidStringError } from "./errors.js";
 import { LOGS_PREFIX } from "./constants";
 
 /**
@@ -12,17 +12,11 @@ import { LOGS_PREFIX } from "./constants";
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
 function b64Decode(str: string, urlSafe = true): string {
-
   log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
-
-  if (!isString(str, "!0")) 
-    throw new InvalidStringError();
-
-
+  isString(str, "!0", null, true);
   if (urlSafe)
-	  str = str.replace(/-/g, "+").replace(/_/g, "/");
-	  
-	return Buffer.from(str + pad(str), "base64").toString("utf8");
+    str = str.replace(/-/g, "+").replace(/_/g, "/");
+  return Buffer.from(str + pad(str), "base64").toString("utf8");
 }
 
 
@@ -35,12 +29,8 @@ function b64Decode(str: string, urlSafe = true): string {
  * @throws {InvalidStringError} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {
-
   log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);
-
-  if (!isString(str, "!0")) 
-    throw new InvalidStringError();
-
+  isString(str, "!0", null, true);
   let b64 = Buffer.from(str).toString("base64");
   if (urlSafe)
     b64 = b64.replace(/\+/g, "-")

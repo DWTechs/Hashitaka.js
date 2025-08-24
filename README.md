@@ -372,8 +372,6 @@ Hashitaka uses a structured error system that helps you identify and handle spec
 ```
 HashitakaError (abstract base class)
 ├── HashLengthMismatchError
-├── InvalidStringError
-└── InvalidBase64SecretError
 ```
 
 ### Common Properties
