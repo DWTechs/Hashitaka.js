@@ -11,9 +11,7 @@ import { isValidInteger,
          isBase64
        } from "@dwtechs/checkard";
 import { b64Decode } from "./base64.js";
-import { 
-  HashLengthMismatchError,
-} from "./errors.js";
+import { HashLengthMismatchError } from "./errors.js";
 import { LOGS_PREFIX } from "./constants";
 
 const digests = getHashes();
@@ -69,9 +67,7 @@ let saltRnds = 12;
  * - Any security-critical buffer comparison
  */
 function tse(a: Buffer, b: Buffer): boolean {
-
   log.debug(`${LOGS_PREFIX}Comparing buffers (lengths: ${a.length}, ${b.length})`);
-
   if (a.length !== b.length)
     throw new HashLengthMismatchError();  
   return timingSafeEqual(a, b);

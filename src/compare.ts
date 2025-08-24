@@ -2,7 +2,6 @@ import { log } from "@dwtechs/winstan";
 import { isString, isBase64 } from "@dwtechs/checkard";
 import { tse, pbkdf2 } from "./hash";
 import { b64Decode } from "./base64.js";
-// import { InvalidStringError, InvalidBase64SecretError } from "./errors.js";
 import { LOGS_PREFIX } from "./constants";
 
 /**

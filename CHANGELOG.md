@@ -1,3 +1,8 @@
+# 0.3.0 (Aug 23th 2025)
+
+- Updated all validation functions to use Checkard's new error-throwing behavior with `throwErr: true`
+- All functions now throw errors from Checkard library instead of returning false for invalid inputs
+
 # 0.2.3 (Aug 18th 2025)
 
 - Base64 secrets sent to encrypt() and compare() functions does not need to be url-safe anymore

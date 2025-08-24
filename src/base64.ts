@@ -1,6 +1,5 @@
 import { log } from "@dwtechs/winstan";
 import { isString } from "@dwtechs/checkard";
-// import { InvalidStringError } from "./errors.js";
 import { LOGS_PREFIX } from "./constants";
 
 /**
