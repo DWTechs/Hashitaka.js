@@ -9,7 +9,7 @@ const DEFAULT_KEY_LEN = 32;
 /**
  * Generates a random string of the specified length, encoded in base64.
  *
- * @param {number} [len=32] - The length of the random string to generate. Defaults to 32 if not specified.
+ * @param {number} [len=32] - The length of the random string to generate. Must be a valid integer between 1 and 262144. Defaults to 32 if not specified or invalid.
  * @returns {string} The generated random string encoded in base64.
  */
 function create(len: number): string {

@@ -126,9 +126,9 @@ function getSaltRounds(): number {}
 /**
  * Sets the number of salt rounds for hashing.
  *
- * @param {number} rnds - The number of salt rounds to set. Must be a valid integer 
- * between 12 and 100.
- * @returns {boolean} True if the salt rounds were successfully set, otherwise false.
+ * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
+ * @returns {boolean} True if the salt rounds were successfully set.
+ * @throws {Error} If rnds is not a valid integer between 12 and 100.
  */
 function setSaltRounds(rnds: number): boolean {} // between 12 and 100
 
@@ -142,10 +142,9 @@ function getKeyLen(): number {}
 /**
  * Sets the key length to the specified value for hashing.
  *
- * @param {number} len - The desired key length. Must be a valid integer 
- * between 2 and 256.
- * @returns {boolean} True if the key length was successfully set; 
- * otherwise false.
+ * @param {number} len - The desired key length. Must be a valid integer between 2 and 256.
+ * @returns {boolean} True if the key length was successfully set.
+ * @throws {Error} If len is not a valid integer between 2 and 256.
  */
 function setKeyLen(r: number): boolean {} // between 2 and 256
 
@@ -160,9 +159,9 @@ function getDigest(): string {}
  * Sets the hash function used for hashing.
  * The list of available digests is returned by getDigests()
  *
- * @param {string} func - The hash function. Must be a valid value from the list of 
- * available hash functions.
- * @returns {boolean} True if the hash function was successfully set; otherwise false.
+ * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
+ * @returns {boolean} True if the hash function was successfully set.
+ * @throws {Error} If func is not a valid hash function from the available list.
  */
 function setDigest(d: string): boolean {}
 
@@ -235,8 +234,8 @@ function tse(a: Buffer, b: Buffer): boolean {}
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
  * @returns {string} The salted hash as a hex string, with the salt prepended.
  *
- * @throws {InvalidStringError} If `str` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {Error} If `str` is not a non-empty string.
+ * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const secret = rndB64Secret();
@@ -303,14 +302,32 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
 
 
 /**
- * Compares a plaintext string with a hashed string using a secret.
+ * Verifies whether a plaintext string matches a previously hashed value using the same secret.
  *
- * @param {string} str - The plaintext string to compare.
- * @param {string} hash - The hashed string to compare against.
- * @param {string} b64Secret - The base64 encoded secret used for hashing.
- * @returns {boolean} true if the password matches the hash, false otherwise.
- * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ * This function extracts the salt from the stored hash, re-derives the hash from the provided plaintext
+ * and secret, and performs a timing-safe comparison. It is typically used for password verification or
+ * any scenario where you need to check if a user-provided value matches a stored hash.
+ *
+ * @param {string} str - The plaintext string to verify (e.g., a password).
+ * @param {string} hash - The stored hash to compare against (salt + hash, as produced by `encrypt`).
+ * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
+ * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
+ *
+ * @throws {Error} If `str` or `hash` is not a non-empty string.
+ * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
+ *
+ * @example
+ * const isValid = compare("userInput", storedHash, secret);
+ * if (isValid) {
+ *   // Password or secret is correct
+ * } else {
+ *   // Invalid password or secret
+ * }
+ *
+ * @remarks
+ * - Always use the same secret and salt extraction logic as when hashing.
+ * - Uses timing-safe comparison to prevent timing attacks.
+ * - For password verification, always return a boolean (never throw on mismatch).
  */
 function compare( str: string, hash: string, b64Secret: string ): boolean {}
 
@@ -323,8 +340,7 @@ function compare( str: string, hash: string, b64Secret: string ): boolean {}
 /**
  * Generates a random string of the specified length, encoded in base64.
  *
- * @param {number} [length=32] - The length of the random string to generate. 
- * Defaults to 32 if not specified.
+ * @param {number} [len=32] - The length of the random string to generate. Must be a valid integer between 1 and 262144. Defaults to 32 if not specified or invalid.
  * @returns {string} The generated random string encoded in base64.
  */
 function rndB64Secret(length = 32): string {}
@@ -342,10 +358,9 @@ function rndB64Secret(length = 32): string {}
  * Decodes a base64 encoded string.
  *
  * @param {string} str - The base64 encoded string to decode.
- * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. 
- * Defaults to true.
+ * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {InvalidStringError} If `str` is not a non-empty string.
+ * @throws {Error} If `str` is not a non-empty string.
  */
 function b64Decode(str: string, urlSafe = true): string {}
 
@@ -353,11 +368,9 @@ function b64Decode(str: string, urlSafe = true): string {}
  * Encodes a given string into Base64 format.
  * 
  * @param {string} str - The string to be encoded.
- * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. 
- * Defaults to true.
- * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified 
- * to be URL safe.
- * @throws {InvalidStringError} If `str` is not a non-empty string.
+ * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. Defaults to true.
+ * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified to be URL safe.
+ * @throws {Error} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {}
 

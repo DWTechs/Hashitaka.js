@@ -8,7 +8,7 @@ import { LOGS_PREFIX } from "./constants";
  * @param {string} str - The base64 encoded string to decode.
  * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {InvalidStringError} If `str` is not a non-empty string.
+ * @throws {Error} If `str` is not a non-empty string.
  */
 function b64Decode(str: string, urlSafe = true): string {
   log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
@@ -25,7 +25,7 @@ function b64Decode(str: string, urlSafe = true): string {
  * @param {string} str - The string to be encoded.
  * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. Defaults to true.
  * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified to be URL safe.
- * @throws {InvalidStringError} If `str` is not a non-empty string.
+ * @throws {Error} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {
   log.debug(`${LOGS_PREFIX}Encoding string (urlSafe=${urlSafe})`);

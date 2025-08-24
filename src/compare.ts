@@ -16,8 +16,8 @@ import { LOGS_PREFIX } from "./constants";
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
- * @throws {InvalidStringError} If `str` or `hash` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {Error} If `str` or `hash` is not a non-empty string.
+ * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const isValid = compare("userInput", storedHash, secret);

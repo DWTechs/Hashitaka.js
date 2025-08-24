@@ -87,7 +87,8 @@ function getSaltRounds(): number {
  * Sets the number of salt rounds for hashing.
  *
  * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
- * @returns {boolean} True if the salt rounds were successfully set, otherwise false.
+ * @returns {boolean} True if the salt rounds were successfully set.
+ * @throws {Error} If rnds is not a valid integer between 12 and 100.
  */
 function setSaltRounds(rnds: number): boolean {
   log.debug(`${LOGS_PREFIX}Setting salt rounds to ${rnds}`);
@@ -110,7 +111,8 @@ function getKeyLen(): number {
  * Sets the key length to the specified value for hashing.
  *
  * @param {number} len - The desired key length. Must be a valid integer between 2 and 256.
- * @returns {boolean} True if the key length was successfully set; otherwise false.
+ * @returns {boolean} True if the key length was successfully set.
+ * @throws {Error} If len is not a valid integer between 2 and 256.
  */
 function setKeyLen(len: number): boolean {
   log.debug(`${LOGS_PREFIX}Setting key length to ${len}`);
@@ -133,7 +135,8 @@ function getDigest(): string {
  * The list of available digests is returned by getDigests()
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
- * @returns {boolean} True if the hash function was successfully set; otherwise false.
+ * @returns {boolean} True if the hash function was successfully set.
+ * @throws {Error} If func is not a valid hash function from the available list.
  */
 function setDigest(func: string): boolean {
   log.debug(`${LOGS_PREFIX}Setting hash function to ${func}`);
@@ -240,8 +243,8 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
  * @returns {string} The salted hash as a hex string, with the salt prepended.
  *
- * @throws {InvalidStringError} If `str` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {Error} If `str` is not a non-empty string.
+ * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const secret = rndB64Secret();
