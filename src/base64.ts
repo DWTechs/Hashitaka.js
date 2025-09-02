@@ -1,5 +1,5 @@
 import { log } from "@dwtechs/winstan";
-import { isString } from "@dwtechs/checkard";
+import { isString, isBase64 } from "@dwtechs/checkard";
 import { LOGS_PREFIX } from "./constants";
 
 /**
@@ -8,11 +8,11 @@ import { LOGS_PREFIX } from "./constants";
  * @param {string} str - The base64 encoded string to decode.
  * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {Error} If `str` is not a non-empty string.
+ * @throws {Error} If `str` is not a valid base64 string.
  */
 function b64Decode(str: string, urlSafe = true): string {
   log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
-  isString(str, "!0", null, true);
+  isBase64(str, urlSafe, true);
   if (urlSafe)
     str = str.replace(/-/g, "+").replace(/_/g, "/");
   return Buffer.from(str + pad(str), "base64").toString("utf8");

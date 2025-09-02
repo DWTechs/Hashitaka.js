@@ -26,13 +26,13 @@ https://github.com/DWTechs/Hashitaka.js
 
 import { log } from '@dwtechs/winstan';
 import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
-import { isString, isValidInteger, isIn, isBase64 } from '@dwtechs/checkard';
+import { isBase64, isString, isValidInteger, isIn } from '@dwtechs/checkard';
 
 const LOGS_PREFIX = "Hashitaka: ";
 
 function b64Decode(str, urlSafe = true) {
     log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
-    isString(str, "!0", null, true);
+    isBase64(str, urlSafe, true);
     if (urlSafe)
         str = str.replace(/-/g, "+").replace(/_/g, "/");
     return Buffer.from(str + pad(str), "base64").toString("utf8");
