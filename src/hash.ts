@@ -259,8 +259,8 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
 function encrypt(str: string, b64Secret: string): string {
   log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
   isString(str, "!0", null, true);
-  isBase64(b64Secret, false, true);
-  const secret = b64Decode(b64Secret, true);
+  isBase64(b64Secret, true, true);  // Validate as URL-safe base64
+  const secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
   const salt = randomSalt();
   return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
 }

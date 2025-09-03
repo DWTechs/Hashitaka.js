@@ -12,10 +12,14 @@ import { LOGS_PREFIX } from "./constants";
  */
 function b64Decode(str: string, urlSafe = true): string {
   log.debug(`${LOGS_PREFIX}Decoding base64 string (urlSafe=${urlSafe})`);
+  
   isBase64(str, urlSafe, true);
+
   if (urlSafe)
     str = str.replace(/-/g, "+").replace(/_/g, "/");
+
   return Buffer.from(str + pad(str), "base64").toString("utf8");
+
 }
 
 

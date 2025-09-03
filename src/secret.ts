@@ -15,7 +15,7 @@ const DEFAULT_KEY_LEN = 32;
 function create(len: number): string {
 	log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
 	const kl = isValidInteger(len, 1, 262144) ? len : DEFAULT_KEY_LEN;
-	return b64Encode(randomBytes(kl).toString("utf8"), false);
+	return b64Encode(randomBytes(kl).toString("utf8"), true);
 }
 
 export { create };

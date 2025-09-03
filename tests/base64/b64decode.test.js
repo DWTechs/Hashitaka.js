@@ -60,20 +60,20 @@ test("sends figure as string to b64Decode url safe", () => {
   expect(b64Decode(t5e, true)).toBe("1");
 });
 
-test("sends number as string to b64Decode url safe", () => {
-  expect(b64Decode(t6, true)).toBe("89");
+test("sends encoded number not url safe as string to b64Decode url safe", () => {
+  expect(() => b64Decode(t6, true)).toThrow();
 });
 
-test("sends number as string to b64Decode", () => {
-  expect(b64Decode(t6e, false)).toBe("89");
+test("sends number url-safe as string to b64Decode not url-safe", () => {
+  expect(() => b64Decode(t6e, false)).toThrow();
 });
 
-test("sends number in string to b64Decode url safe", () => {
-  expect(b64Decode(t7, true)).toBe("89rt");
+test("sends encoded string not url safe as string to b64Decode url safe", () => {
+  expect(() => b64Decode(t7, true)).toThrow();
 });
 
-test("sends number in string to b64Decode", () => {
-  expect(b64Decode(t7e, false)).toBe("89rt");
+test("sends string url-safe in string to b64Decode not url-safe", () => {
+  expect(() => b64Decode(t7e, false)).toThrow();
 });
 
 test("sends float as string to b64Decode url safe", () => {
@@ -84,10 +84,10 @@ test("sends float as string to b64Decode", () => {
   expect(b64Decode(t8e, false)).toBe("1.5");
 });
 
-test("sends number in string to b64Decode urlsafe", () => {
-  expect(b64Decode(t9, true)).toBe("8.9rt");
+test("sends float string not url safe in string to b64Decode urlsafe", () => {
+  expect(() => b64Decode(t9, true)).toThrow();
 });
 
-test("sends number in string to b64Decode", () => {
-  expect(b64Decode(t9e, false)).toBe("8.9rt");
+test("sends float string url-safe in string to b64Decode not url-safe", () => {
+  expect(() => b64Decode(t9e, false)).toThrow();
 });

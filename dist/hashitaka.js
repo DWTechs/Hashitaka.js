@@ -123,7 +123,7 @@ function pbkdf2(str, secret, salt) {
 function encrypt(str, b64Secret) {
     log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
     isString(str, "!0", null, true);
-    isBase64(b64Secret, false, true);
+    isBase64(b64Secret, true, true);
     const secret = b64Decode(b64Secret, true);
     const salt = randomSalt();
     return salt + pbkdf2(str, secret, salt).toString("hex");
@@ -144,8 +144,8 @@ function compare(str, hash, b64Secret) {
 const DEFAULT_KEY_LEN = 32;
 function create(len) {
     log.debug(`${LOGS_PREFIX}Creating secret of length=${len}`);
-    const kl = isValidInteger(len, 1, 262144, false) ? len : DEFAULT_KEY_LEN;
-    return b64Encode(randomBytes(kl).toString("utf8"), false);
+    const kl = isValidInteger(len, 1, 262144) ? len : DEFAULT_KEY_LEN;
+    return b64Encode(randomBytes(kl).toString("utf8"), true);
 }
 
 export { HashitakaError, b64Decode, b64Encode, compare, encrypt, getDigest, getDigests, getKeyLen, getSaltRounds, hash, pbkdf2, create as rndB64Secret, setDigest, setKeyLen, setSaltRounds, tse };
