@@ -1,3 +1,8 @@
+# 0.3.1 (Sep 2nd 2025)
+
+- Added `urlSafe` parameter to the `compare` function to chose from URL-safe base64 secrets or standard base64 secrets
+- Updated @dwtechs/checkard to version 3.5.0
+
 # 0.3.0 (Aug 23th 2025)
 
 - Updated all validation functions to use Checkard's new error-throwing behavior with `throwErr: true`

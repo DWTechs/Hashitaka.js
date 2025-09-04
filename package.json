@@ -1,6 +1,6 @@
 {
   "name": "@dwtechs/hashitaka",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Open source Node.js library for secure hash generation, encryption and comparison.",
   "keywords": [
     "hash",

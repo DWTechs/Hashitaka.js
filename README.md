@@ -22,7 +22,7 @@
 
 - 📦 Only 2 dependencies to check inputs variables and log debug infos
 - 🪶 Very lightweight
-- 🧪 Thoroughly tested
+- 🧪 Thoroughly tested with xx Unit tests
 - 🚚 Shipped as EcmaScrypt module
 - 📝 Written in Typescript
 
@@ -302,22 +302,23 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
 
 
 /**
- * Verifies whether a plaintext string matches a previously hashed value using the same secret.
+ * Verifies whether a plaintext string matches a previously hashed value using the same secret and salt extraction logic.
  *
- * This function extracts the salt from the stored hash, re-derives the hash from the provided plaintext
- * and secret, and performs a timing-safe comparison. It is typically used for password verification or
- * any scenario where you need to check if a user-provided value matches a stored hash.
+ * This function extracts the salt from the stored hash, decodes the secret (optionally using URL-safe base64),
+ * re-derives the hash from the provided plaintext and secret, and performs a timing-safe comparison.
+ * It is typically used for password verification or any scenario where you need to check if a user-provided value matches a stored hash.
  *
  * @param {string} str - The plaintext string to verify (e.g., a password).
  * @param {string} hash - The stored hash to compare against (salt + hash, as produced by `encrypt`).
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
+ * @param {boolean} [urlSafe=false] - If true, decodes the secret using URL-safe base64 encoding.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
  * @throws {Error} If `str` or `hash` is not a non-empty string.
  * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
- * const isValid = compare("userInput", storedHash, secret);
+ * const isValid = compare("userInput", storedHash, secret, true);
  * if (isValid) {
  *   // Password or secret is correct
  * } else {
@@ -329,7 +330,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
  * - Uses timing-safe comparison to prevent timing attacks.
  * - For password verification, always return a boolean (never throw on mismatch).
  */
-function compare( str: string, hash: string, b64Secret: string ): boolean {}
+function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean = false ): boolean {}
 
 ```
 
@@ -360,7 +361,7 @@ function rndB64Secret(length = 32): string {}
  * @param {string} str - The base64 encoded string to decode.
  * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {Error} If `str` is not a non-empty string.
+ * @throws {Error} If `str` is not a valid base64 string.
  */
 function b64Decode(str: string, urlSafe = true): string {}
 
