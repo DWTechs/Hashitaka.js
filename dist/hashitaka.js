@@ -129,12 +129,11 @@ function encrypt(str, b64Secret) {
     return salt + pbkdf2(str, secret, salt).toString("hex");
 }
 
-function compare(str, hash, b64Secret) {
+function compare(str, hash, b64Secret, urlSafe = false) {
     log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
     isString(str, "!0", null, true);
     isString(hash, "!0", null, true);
-    isBase64(b64Secret, false, true);
-    const secret = b64Decode(b64Secret, true);
+    const secret = b64Decode(b64Secret, urlSafe);
     const salt = hash.slice(0, 32);
     const hashedStr = pbkdf2(str, secret, salt);
     const storedHash = Buffer.from(hash.slice(32), "hex");

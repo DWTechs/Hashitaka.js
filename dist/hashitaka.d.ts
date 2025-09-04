@@ -44,7 +44,7 @@ declare function getDigest(): string;
 declare function setDigest(func: string): boolean;
 declare function getDigests(): string[];
 declare function encrypt(str: string, b64Secret: string): string | false;
-declare function compare(str: string, hash: string, b64Secret: string): boolean;
+declare function compare(str: string, hash: string, b64Secret: string, urlSafe?: boolean): boolean;
 declare function rndB64Secret(len?: number): string;
 declare function b64Decode(str: string, urlSafe?: boolean): string;
 declare function b64Encode(str: string, urlSafe?: boolean): string;

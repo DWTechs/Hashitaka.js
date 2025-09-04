@@ -33,7 +33,12 @@ import { LOGS_PREFIX } from "./constants";
  * - Uses timing-safe comparison to prevent timing attacks.
  * - For password verification, always return a boolean (never throw on mismatch).
  */
-function compare(str: string, hash: string, b64Secret: string, urlSafe: boolean = false): boolean {
+function compare(
+  str: string, 
+  hash: string, 
+  b64Secret: string, 
+  urlSafe: boolean = false
+): boolean {
   log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
   isString(str, "!0", null, true);
   isString(hash, "!0", null, true);
