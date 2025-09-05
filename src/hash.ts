@@ -1,4 +1,3 @@
-import { log } from "@dwtechs/winstan";
 import { randomBytes, 
          createHmac,
          getHashes,
@@ -7,17 +6,21 @@ import { randomBytes,
        } from "node:crypto";
 import { isValidInteger, 
          isString, 
-         isIn,
-         isBase64
+         isIn
        } from "@dwtechs/checkard";
 import { b64Decode } from "./base64.js";
-import { HashLengthMismatchError } from "./errors.js";
-import { LOGS_PREFIX } from "./constants";
+import { HashLengthMismatchError, InvalidSaltRoundsError, InvalidKeyLengthError, InvalidDigestError, HmacCreationError, Pbkdf2DerivationError, InvalidStringToEncryptError, InvalidBase64SecretError } from "./errors.js";
 
 const digests = getHashes();
 let digest = "sha256";
 let keyLen = 64;
 let saltRnds = 12;
+
+const MIN_SALT_ROUNDS = 12;
+const MAX_SALT_ROUNDS = 100;
+
+const MIN_KEY_LENGTH = 2;
+const MAX_KEY_LENGTH = 256;
 
 /**
  * Timing-Safe Equality (TSE) function for comparing two buffers in constant time.
@@ -67,7 +70,6 @@ let saltRnds = 12;
  * - Any security-critical buffer comparison
  */
 function tse(a: Buffer, b: Buffer): boolean {
-  log.debug(`${LOGS_PREFIX}Comparing buffers (lengths: ${a.length}, ${b.length})`);
   if (a.length !== b.length)
     throw new HashLengthMismatchError();  
   return timingSafeEqual(a, b);
@@ -88,11 +90,17 @@ function getSaltRounds(): number {
  *
  * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
  * @returns {boolean} True if the salt rounds were successfully set.
- * @throws {Error} If rnds is not a valid integer between 12 and 100.
+ * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 12 and 100.
  */
 function setSaltRounds(rnds: number): boolean {
-  log.debug(`${LOGS_PREFIX}Setting salt rounds to ${rnds}`);
-	isValidInteger(rnds, 12, 100, true, true); 
+  try {
+    isValidInteger(rnds, MIN_SALT_ROUNDS, MAX_SALT_ROUNDS, true, true);
+  } catch (err) {
+    const e = new InvalidSaltRoundsError(MIN_SALT_ROUNDS, MAX_SALT_ROUNDS);
+    e.cause = err;
+    throw e;
+  }
+  
 	saltRnds = rnds;
 	return true;
 }
@@ -112,11 +120,17 @@ function getKeyLen(): number {
  *
  * @param {number} len - The desired key length. Must be a valid integer between 2 and 256.
  * @returns {boolean} True if the key length was successfully set.
- * @throws {Error} If len is not a valid integer between 2 and 256.
+ * @throws {InvalidKeyLengthError} If len is not a valid integer between 2 and 256.
  */
 function setKeyLen(len: number): boolean {
-  log.debug(`${LOGS_PREFIX}Setting key length to ${len}`);
-	isValidInteger(len, 2, 256, true, true);
+  try {
+    isValidInteger(len, MIN_KEY_LENGTH, MAX_KEY_LENGTH, true, true);
+  } catch (err) {
+    const e = new InvalidKeyLengthError(MIN_KEY_LENGTH, MAX_KEY_LENGTH);
+    e.cause = err;
+    throw e;
+  }
+  
 	keyLen = len;
 	return true;
 }
@@ -136,11 +150,17 @@ function getDigest(): string {
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
  * @returns {boolean} True if the hash function was successfully set.
- * @throws {Error} If func is not a valid hash function from the available list.
+ * @throws {InvalidDigestError} If func is not a valid hash function from the available list.
  */
 function setDigest(func: string): boolean {
-  log.debug(`${LOGS_PREFIX}Setting hash function to ${func}`);
-	isIn(digests, func, undefined, true); 
+  try {
+    isIn(digests, func, undefined, true);
+  } catch (err) {
+    const e = new InvalidDigestError();
+    e.cause = err;
+    throw e;
+  }
+  
 	digest = func;
 	return true;
 }
@@ -167,6 +187,7 @@ function getDigests(): string[] {
  * @param {string} str - The input string to hash (e.g., a password).
  * @param {string} secret - The secret (pepper) to use for HMAC. Should be kept private.
  * @returns {string} The base64url-encoded HMAC hash of the input string.
+ * @throws {HmacCreationError} If HMAC creation fails due to invalid digest or secret.
  *
  * @example
  * const hashValue = hash("myPassword", "mySecretKey");
@@ -178,8 +199,13 @@ function getDigests(): string[] {
  * - For encryption (two-way), use the `encrypt` function instead.
  */
 function hash(str: string, secret: string): string {
-  log.debug(`${LOGS_PREFIX}Hashing str='${str}' using secret='${secret}'`);
-  return createHmac(digest, secret).update(str).digest("base64url");
+  try {
+    return createHmac(digest, secret).update(str).digest("base64url");
+  } catch (err) {
+    const e = new HmacCreationError();
+    e.cause = err;
+    throw e;
+  }
 }
 
 /**
@@ -192,7 +218,6 @@ function hash(str: string, secret: string): string {
  * // salt might be: '9f86d081884c7d659a2feaa0c55ad015'
  */
 function randomSalt(): string {
-  log.debug(`${LOGS_PREFIX}Generating random salt`);
   return randomBytes(16).toString("hex");
 }
 
@@ -209,6 +234,7 @@ function randomSalt(): string {
  * @param {string} secret - The secret (pepper) to use for HMAC.
  * @param {string} salt - The salt to use for key derivation (should be random and unique per hash).
  * @returns {Buffer} The derived key as a Buffer.
+ * @throws {Pbkdf2DerivationError} If PBKDF2 key derivation fails due to invalid parameters or system issues.
  *
  * @example
  * const salt = randomSalt();
@@ -221,14 +247,19 @@ function randomSalt(): string {
  * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
  */
 function pbkdf2(str: string, secret: string, salt: string): Buffer {
-  log.debug(`${LOGS_PREFIX}Deriving key using PBKDF2 (salt=${salt})`);
-  return pbkdf2Sync(
-    hash(str, secret),
-    salt,
-    saltRnds,
-    keyLen,
-    digest
-  );
+  try {
+    return pbkdf2Sync(
+      hash(str, secret),
+      salt,
+      saltRnds,
+      keyLen,
+      digest
+    );
+  } catch (err) {
+    const e = new Pbkdf2DerivationError();
+    e.cause = err;
+    throw e;
+  }
 }
 
 
@@ -243,8 +274,8 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
  * @returns {string} The salted hash as a hex string, with the salt prepended.
  *
- * @throws {Error} If `str` is not a non-empty string.
- * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {InvalidStringToEncryptError} If `str` is not a non-empty string.
+ * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const secret = rndB64Secret();
@@ -257,10 +288,23 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * - For verification, use the `compare` function with the same secret.
  */
 function encrypt(str: string, b64Secret: string): string {
-  log.debug(`${LOGS_PREFIX}Encrypting str='${str}' using b64Secret='${b64Secret}'`);
-  isString(str, "!0", null, true);
-  isBase64(b64Secret, true, true);  // Validate as URL-safe base64
-  const secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
+  try {
+    isString(str, "!0", null, true);
+  } catch (err) {
+    const e = new InvalidStringToEncryptError();
+    e.cause = err;
+    throw e;
+  }
+  
+  let secret: string;
+  try {
+    secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
+  } catch (err) {
+    const e = new InvalidBase64SecretError();
+    e.cause = err;
+    throw e;
+  }
+  
   const salt = randomSalt();
   return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
 }

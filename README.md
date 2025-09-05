@@ -342,9 +342,10 @@ function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean
  * Generates a random string of the specified length, encoded in base64.
  *
  * @param {number} [len=32] - The length of the random string to generate. Must be a valid integer between 1 and 262144. Defaults to 32 if not specified or invalid.
+ * @param {boolean} [urlSafe=true] - If true, uses URL-safe base64 encoding. Defaults to true.
  * @returns {string} The generated random string encoded in base64.
  */
-function rndB64Secret(length = 32): string {}
+function rndB64Secret(length = 32, urlSafe = true): string {}
 
 ```
 
@@ -361,7 +362,7 @@ function rndB64Secret(length = 32): string {}
  * @param {string} str - The base64 encoded string to decode.
  * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {Error} If `str` is not a valid base64 string.
+ * @throws {InvalidBase64FormatError} If `str` is not a valid base64 string.
  */
 function b64Decode(str: string, urlSafe = true): string {}
 
@@ -371,7 +372,7 @@ function b64Decode(str: string, urlSafe = true): string {}
  * @param {string} str - The string to be encoded.
  * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. Defaults to true.
  * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified to be URL safe.
- * @throws {Error} If `str` is not a non-empty string.
+ * @throws {InvalidStringForEncodingError} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {}
 

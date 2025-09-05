@@ -1,8 +1,7 @@
-import { log } from "@dwtechs/winstan";
 import { isString } from "@dwtechs/checkard";
 import { tse, pbkdf2 } from "./hash";
 import { b64Decode } from "./base64.js";
-import { LOGS_PREFIX } from "./constants";
+import { InvalidStringError, InvalidStoredHashError } from "./errors";
 
 /**
  * Verifies whether a plaintext string matches a previously hashed value using the same secret and salt extraction logic.
@@ -17,7 +16,8 @@ import { LOGS_PREFIX } from "./constants";
  * @param {boolean} [urlSafe=false] - If true, decodes the secret using URL-safe base64 encoding.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
- * @throws {Error} If `str` or `hash` is not a non-empty string.
+ * @throws {InvalidStringError} If `str` is not a non-empty string.
+ * @throws {InvalidStoredHashError} If `hash` is not a non-empty string.
  * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
@@ -39,9 +39,23 @@ function compare(
   b64Secret: string, 
   urlSafe: boolean = false
 ): boolean {
-  log.debug(`${LOGS_PREFIX}Comparing str='${str}' with hash='${hash}' using b64Secret='${b64Secret}'`);
-  isString(str, "!0", null, true);
-  isString(hash, "!0", null, true);
+
+  try {
+    isString(str, "!0", null, true);
+  } catch (err) {
+    const e = new InvalidStringError();
+    e.cause = err;
+    throw e;
+  }
+  
+  try {
+    isString(hash, "!0", null, true);
+  } catch (err) {
+    const e = new InvalidStoredHashError();
+    e.cause = err;
+    throw e;
+  }
+  
   const secret = b64Decode(b64Secret, urlSafe);
   const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
   const hashedStr = pbkdf2(str, secret, salt); 

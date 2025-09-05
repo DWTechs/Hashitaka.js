@@ -1,12 +1,15 @@
 # 0.3.1 (Sep 2nd 2025)
 
-- Added `urlSafe` parameter to the `compare` function to chose from URL-safe base64 secrets or standard base64 secrets
+- Added `urlSafe` parameter to the `compare` and `rndB64Secret` function to chose from URL-safe base64 secrets or standard base64 secrets
+- Delete logs dependency
+- Replaced logs by proper custom errors
 - Updated @dwtechs/checkard to version 3.5.0
+- `setDigest()`, `setKeyLen()`, `setSaltRounds()`, `hash()`, `pbkdf2()`, `tse()`, `encrypt()`, `b64Encode()`, `b64Decode()` and `compare()` functions throws custom errors on top of @dwtechs/Checkard errors
 
 # 0.3.0 (Aug 23th 2025)
 
 - Updated all validation functions to use Checkard's new error-throwing behavior with `throwErr: true`
-- All functions now throw errors from Checkard library instead of returning false for invalid inputs
+- All functions now throw errors from @dwtechs/Checkard library instead of returning false for invalid inputs
 
 # 0.2.3 (Aug 18th 2025)
 
