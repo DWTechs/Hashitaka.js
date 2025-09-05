@@ -20,9 +20,9 @@
 
 **[Hashitaka.js](https://github.com/DWTechs/Hashitaka.js)** is an open source Node.js library for secure hash generation, encryption and comparison.
 
-- 📦 Only 2 dependencies to check inputs variables and log debug infos
+- 📦 Only 1 dependency to check inputs variables
 - 🪶 Very lightweight
-- 🧪 Thoroughly tested with xx Unit tests
+- 🧪 Thoroughly tested with more than 120 Unit tests
 - 🚚 Shipped as EcmaScrypt module
 - 📝 Written in Typescript
 
@@ -425,8 +425,17 @@ try {
 | Error Class | Code | Status Code | Description |
 |-------------|------|-------------|-------------|
 | HashLengthMismatchError | HASH_LENGTH_MISMATCH | 400 | Hashes must have the same byte length |
-| InvalidStringError | INVALID_STRING | 400 | str must be a non-empty string |
-| InvalidBase64SecretError | INVALID_BASE64_SECRET | 400 | b64Secret must be a base64 encoded string |
+| InvalidBase64FormatError | INVALID_BASE64_FORMAT | 400 | Cannot decode invalid base64 format |
+| InvalidStringForEncodingError | INVALID_STRING_FOR_ENCODING | 400 | Cannot encode invalid or empty string |
+| InvalidStringForCompareError | INVALID_STRING_FOR_COMPARE | 400 | Invalid string for hash comparison |
+| InvalidHashError | INVALID_HASH_FOR_COMPARE | 400 | Invalid stored hash for comparison |
+| InvalidSaltRoundsError | INVALID_SALT_ROUNDS | 400 | Invalid salt rounds, must be between 12 and 100 |
+| InvalidKeyLengthError | INVALID_KEY_LENGTH | 400 | Invalid key length, must be between 2 and 256 |
+| InvalidDigestError | INVALID_DIGEST | 400 | Invalid hash digest function |
+| InvalidStringToEncryptError | INVALID_STRING_TO_ENCRYPT | 400 | Invalid string to encrypt |
+| InvalidBase64SecretError | INVALID_BASE64_SECRET | 400 | Invalid base64 secret for encryption |
+| HmacCreationError | HMAC_CREATION_FAILED | 500 | Failed to create HMAC hash |
+| Pbkdf2DerivationError | PBKDF2_DERIVATION_FAILED | 500 | Failed to derive key using PBKDF2 |
 
 
 ## Express.js

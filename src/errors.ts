@@ -43,7 +43,7 @@ export class HashLengthMismatchError extends HashitakaError {
   readonly code = "HASH_LENGTH_MISMATCH";
   readonly statusCode = 400;
 
-  constructor(message = `${HASHITAKA_PREFIX}Hashes must have the same byte length`) {
+  constructor(message = `${HASHITAKA_PREFIX}Hashes must have the same byte length to be compared`) {
     super(message);
   }
 }
@@ -67,7 +67,7 @@ export class InvalidBase64FormatError extends HashitakaError {
   readonly statusCode = 400;
 
   constructor(urlSafe: boolean) {
-    const message = `${HASHITAKA_PREFIX}Cannot decode invalid base64${urlSafe ? ' URL-safe' : ' non URL-safe'} format`;
+    const message = `${HASHITAKA_PREFIX}Received invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} to decode`;
     super(message);
   }
 }
@@ -91,7 +91,7 @@ export class InvalidStringForEncodingError extends HashitakaError {
   readonly statusCode = 400;
 
   constructor() {
-    const message = `${HASHITAKA_PREFIX}Cannot encode invalid or empty string`;
+    const message = `${HASHITAKA_PREFIX}Received invalid string to encode in base64`;
     super(message);
   }
 }
@@ -110,12 +110,12 @@ export class InvalidStringForEncodingError extends HashitakaError {
  * }
  * ```
  */
-export class InvalidStringError extends HashitakaError {
-  readonly code = "INVALID_STRING";
+export class InvalidStringForCompareError extends HashitakaError {
+  readonly code = "INVALID_STRING_FOR_COMPARE";
   readonly statusCode = 400;
 
   constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid string for hash comparison`;
+    const message = `${HASHITAKA_PREFIX}Invalid string for comparison`;
     super(message);
   }
 }
@@ -134,12 +134,12 @@ export class InvalidStringError extends HashitakaError {
  * }
  * ```
  */
-export class InvalidStoredHashError extends HashitakaError {
-  readonly code = "INVALID_STORED_HASH";
+export class InvalidHashForCompareError extends HashitakaError {
+  readonly code = "INVALID_HASH_FOR_COMPARE";
   readonly statusCode = 400;
 
   constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid stored hash for comparison`;
+    const message = `${HASHITAKA_PREFIX}Invalid hash for comparison`;
     super(message);
   }
 }

@@ -9,7 +9,14 @@ import { isValidInteger,
          isIn
        } from "@dwtechs/checkard";
 import { b64Decode } from "./base64.js";
-import { HashLengthMismatchError, InvalidSaltRoundsError, InvalidKeyLengthError, InvalidDigestError, HmacCreationError, Pbkdf2DerivationError, InvalidStringToEncryptError, InvalidBase64SecretError } from "./errors.js";
+import { HashLengthMismatchError, 
+         InvalidSaltRoundsError, 
+         InvalidKeyLengthError, 
+         InvalidDigestError, 
+         HmacCreationError, 
+         Pbkdf2DerivationError, 
+         InvalidStringToEncryptError, 
+         InvalidBase64SecretError } from "./errors.js";
 
 const digests = getHashes();
 let digest = "sha256";
