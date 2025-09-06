@@ -1,4 +1,4 @@
-import { encrypt, rndB64Secret, InvalidStringError, InvalidBase64SecretError } from "../dist/hashitaka.js";
+import { encrypt, rndB64Secret } from "../dist/hashitaka.js";
 
 describe("encrypt", () => {
 	const password = "mySecret!/;6(A)Pwd";
