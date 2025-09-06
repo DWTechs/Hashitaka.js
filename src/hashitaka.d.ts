@@ -1,68 +1,68 @@
 
-// Error classes
-declare abstract class HashitakaError extends Error {
-  abstract readonly code: string;
-  abstract readonly statusCode: number;
+export declare abstract class HashitakaError extends Error {
+    abstract readonly code: string;
+    abstract readonly statusCode: number;
+    constructor(message: string);
 }
-
-declare class HashLengthMismatchError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class HashLengthMismatchError extends HashitakaError {
+    readonly code = "HASH_LENGTH_MISMATCH";
+    readonly statusCode = 400;
+    constructor(message?: string);
 }
-
-declare class InvalidBase64FormatError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidBase64ToDecodeError extends HashitakaError {
+    readonly code = "INVALID_BASE64_TO_DECODE";
+    readonly statusCode = 400;
+    constructor(urlSafe: boolean);
 }
-
-declare class InvalidStringForEncodingError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidStringToEncodeError extends HashitakaError {
+    readonly code = "INVALID_STRING_TO_ENCODE";
+    readonly statusCode = 400;
+    constructor();
 }
-
-declare class InvalidStringForCompareError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidStringToCompareError extends HashitakaError {
+    readonly code = "INVALID_STRING_TO_COMPARE";
+    readonly statusCode = 400;
+    constructor();
 }
-
-declare class InvalidHashForCompareError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidHashToCompareError extends HashitakaError {
+    readonly code = "INVALID_HASH_TO_COMPARE";
+    readonly statusCode = 400;
+    constructor();
 }
-
-declare class InvalidSaltRoundsError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidSaltRoundsError extends HashitakaError {
+    readonly code = "INVALID_SALT_ROUNDS";
+    readonly statusCode = 400;
+    constructor(min: number, max: number);
 }
-
-declare class InvalidKeyLengthError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidKeyLengthError extends HashitakaError {
+    readonly code = "INVALID_KEY_LENGTH";
+    readonly statusCode = 400;
+    constructor(min: number, max: number);
 }
-
-declare class InvalidDigestError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidDigestFunctionError extends HashitakaError {
+    readonly code = "INVALID_DIGEST_FUNCTION";
+    readonly statusCode = 400;
+    constructor();
 }
-
-declare class HmacCreationError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class HmacCreationError extends HashitakaError {
+    readonly code = "HMAC_CREATION_FAILED";
+    readonly statusCode = 500;
+    constructor();
 }
-
-declare class Pbkdf2DerivationError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class Pbkdf2DerivationError extends HashitakaError {
+    readonly code = "PBKDF2_DERIVATION_FAILED";
+    readonly statusCode = 500;
+    constructor();
 }
-
-declare class InvalidStringToEncryptError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidStringToEncryptError extends HashitakaError {
+    readonly code = "INVALID_STRING_TO_ENCRYPT";
+    readonly statusCode = 400;
+    constructor();
 }
-
-declare class InvalidBase64SecretError extends HashitakaError {
-  readonly code: string;
-  readonly statusCode: number;
+export declare class InvalidSecretToEncryptError extends HashitakaError {
+    readonly code = "INVALID_SECRET_TO_ENCRYPT";
+    readonly statusCode = 400;
+    constructor();
 }
 
 declare function getSaltRounds(): number;
@@ -97,16 +97,4 @@ export {
   pbkdf2,
   tse,
   hash,
-  HashLengthMismatchError,
-  InvalidBase64FormatError,
-  InvalidStringForEncodingError,
-  InvalidStringForCompareError,
-  InvalidHashForCompareError,
-  InvalidSaltRoundsError,
-  InvalidKeyLengthError,
-  InvalidDigestError,
-  HmacCreationError,
-  Pbkdf2DerivationError,
-  InvalidStringToEncryptError,
-  InvalidBase64SecretError,
 };
