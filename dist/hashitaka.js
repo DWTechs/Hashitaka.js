@@ -43,35 +43,35 @@ class HashLengthMismatchError extends HashitakaError {
         this.statusCode = 400;
     }
 }
-class InvalidBase64FormatError extends HashitakaError {
+class InvalidBase64ToDecodeError extends HashitakaError {
     constructor(urlSafe) {
-        const message = `${HASHITAKA_PREFIX}Received invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} to decode`;
+        const message = `${HASHITAKA_PREFIX}Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
         super(message);
-        this.code = "INVALID_BASE64_FORMAT";
+        this.code = "INVALID_BASE64_TO_DECODE";
         this.statusCode = 400;
     }
 }
-class InvalidStringForEncodingError extends HashitakaError {
+class InvalidStringToEncodeError extends HashitakaError {
     constructor() {
-        const message = `${HASHITAKA_PREFIX}Received invalid string to encode in base64`;
+        const message = `${HASHITAKA_PREFIX}Invalid string to encode in base64`;
         super(message);
-        this.code = "INVALID_STRING_FOR_ENCODING";
+        this.code = "INVALID_STRING_TO_ENCODE";
         this.statusCode = 400;
     }
 }
-class InvalidStringForCompareError extends HashitakaError {
+class InvalidStringToCompareError extends HashitakaError {
     constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid string for comparison`;
+        const message = `${HASHITAKA_PREFIX}Invalid string for hash comparison`;
         super(message);
-        this.code = "INVALID_STRING_FOR_COMPARE";
+        this.code = "INVALID_STRING_TO_COMPARE";
         this.statusCode = 400;
     }
 }
-class InvalidHashForCompareError extends HashitakaError {
+class InvalidHashToCompareError extends HashitakaError {
     constructor() {
         const message = `${HASHITAKA_PREFIX}Invalid hash for comparison`;
         super(message);
-        this.code = "INVALID_HASH_FOR_COMPARE";
+        this.code = "INVALID_HASH_TO_COMPARE";
         this.statusCode = 400;
     }
 }
@@ -91,11 +91,11 @@ class InvalidKeyLengthError extends HashitakaError {
         this.statusCode = 400;
     }
 }
-class InvalidDigestError extends HashitakaError {
+class InvalidDigestFunctionError extends HashitakaError {
     constructor() {
         const message = `${HASHITAKA_PREFIX}Invalid hash digest function`;
         super(message);
-        this.code = "INVALID_DIGEST";
+        this.code = "INVALID_DIGEST_FUNCTION";
         this.statusCode = 400;
     }
 }
@@ -123,11 +123,11 @@ class InvalidStringToEncryptError extends HashitakaError {
         this.statusCode = 400;
     }
 }
-class InvalidBase64SecretError extends HashitakaError {
+class InvalidSecretToEncryptError extends HashitakaError {
     constructor() {
         const message = `${HASHITAKA_PREFIX}Invalid base64 secret for encryption`;
         super(message);
-        this.code = "INVALID_BASE64_SECRET";
+        this.code = "INVALID_SECRET_TO_ENCRYPT";
         this.statusCode = 400;
     }
 }
@@ -137,7 +137,7 @@ function b64Decode(str, urlSafe = true) {
         isBase64(str, urlSafe, true);
     }
     catch (err) {
-        const e = new InvalidBase64FormatError(urlSafe);
+        const e = new InvalidBase64ToDecodeError(urlSafe);
         e.cause = err;
         throw e;
     }
@@ -150,7 +150,7 @@ function b64Encode(str, urlSafe = true) {
         isString(str, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidStringForEncodingError();
+        const e = new InvalidStringToEncodeError();
         e.cause = err;
         throw e;
     }
@@ -165,14 +165,20 @@ function pad(str) {
     return "=".repeat((4 - (str.length % 4)) % 4);
 }
 
+const DEFAULT_SALT_RNDS = 12;
+const MIN_SALT_RNDS = 12;
+const MAX_SALT_RNDS = 100;
+const DEFAULT_KEY_LEN = 64;
+const MIN_KEY_LEN = 2;
+const MAX_KEY_LEN = 256;
+const DEFAULT_SECRET_LEN = 32;
+const MIN_SECRET_LEN = 1;
+const MAX_SECRET_LEN = 262144;
+
 const digests = getHashes();
 let digest = "sha256";
-let keyLen = 64;
-let saltRnds = 12;
-const MIN_SALT_ROUNDS = 12;
-const MAX_SALT_ROUNDS = 100;
-const MIN_KEY_LENGTH = 2;
-const MAX_KEY_LENGTH = 256;
+let keyLen = DEFAULT_KEY_LEN;
+let saltRnds = DEFAULT_SALT_RNDS;
 function tse(a, b) {
     if (a.length !== b.length)
         throw new HashLengthMismatchError();
@@ -183,10 +189,10 @@ function getSaltRounds() {
 }
 function setSaltRounds(rnds) {
     try {
-        isValidInteger(rnds, MIN_SALT_ROUNDS, MAX_SALT_ROUNDS, true, true);
+        isValidInteger(rnds, MIN_SALT_RNDS, MAX_SALT_RNDS, true, true);
     }
     catch (err) {
-        const e = new InvalidSaltRoundsError(MIN_SALT_ROUNDS, MAX_SALT_ROUNDS);
+        const e = new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS);
         e.cause = err;
         throw e;
     }
@@ -198,10 +204,10 @@ function getKeyLen() {
 }
 function setKeyLen(len) {
     try {
-        isValidInteger(len, MIN_KEY_LENGTH, MAX_KEY_LENGTH, true, true);
+        isValidInteger(len, MIN_KEY_LEN, MAX_KEY_LEN, true, true);
     }
     catch (err) {
-        const e = new InvalidKeyLengthError(MIN_KEY_LENGTH, MAX_KEY_LENGTH);
+        const e = new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN);
         e.cause = err;
         throw e;
     }
@@ -216,7 +222,7 @@ function setDigest(func) {
         isIn(digests, func, undefined, true);
     }
     catch (err) {
-        const e = new InvalidDigestError();
+        const e = new InvalidDigestFunctionError();
         e.cause = err;
         throw e;
     }
@@ -263,7 +269,7 @@ function encrypt(str, b64Secret) {
         secret = b64Decode(b64Secret, true);
     }
     catch (err) {
-        const e = new InvalidBase64SecretError();
+        const e = new InvalidSecretToEncryptError();
         e.cause = err;
         throw e;
     }
@@ -276,7 +282,7 @@ function compare(str, hash, b64Secret, urlSafe = false) {
         isString(str, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidStringForCompareError();
+        const e = new InvalidStringToCompareError();
         e.cause = err;
         throw e;
     }
@@ -284,7 +290,7 @@ function compare(str, hash, b64Secret, urlSafe = false) {
         isString(hash, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidHashForCompareError();
+        const e = new InvalidHashToCompareError();
         e.cause = err;
         throw e;
     }
@@ -295,11 +301,8 @@ function compare(str, hash, b64Secret, urlSafe = false) {
     return tse(storedHash, hashedStr);
 }
 
-const DEFAULT_LEN = 32;
-const MIN_SECRET_LEN = 1;
-const MAX_SECRET_LEN = 262144;
-function create(len = DEFAULT_LEN, urlSafe = true) {
-    const kl = isValidInteger(len, MIN_SECRET_LEN, MAX_SECRET_LEN) ? len : DEFAULT_LEN;
+function create(len = DEFAULT_SECRET_LEN, urlSafe = true) {
+    const kl = isValidInteger(len, MIN_SECRET_LEN, MAX_SECRET_LEN) ? len : DEFAULT_SECRET_LEN;
     return b64Encode(randomBytes(kl).toString("utf8"), urlSafe);
 }
 

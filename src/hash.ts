@@ -12,22 +12,22 @@ import { b64Decode } from "./base64.js";
 import { HashLengthMismatchError, 
          InvalidSaltRoundsError, 
          InvalidKeyLengthError, 
-         InvalidDigestError, 
+         InvalidDigestFunctionError, 
          HmacCreationError, 
          Pbkdf2DerivationError, 
          InvalidStringToEncryptError, 
-         InvalidBase64SecretError } from "./errors.js";
+         InvalidSecretToEncryptError } from "./errors.js";
+import { MIN_SALT_RNDS,
+         MAX_SALT_RNDS, 
+         MIN_KEY_LEN, 
+         MAX_KEY_LEN,
+         DEFAULT_KEY_LEN,
+         DEFAULT_SALT_RNDS } from "./constants.js";
 
 const digests = getHashes();
 let digest = "sha256";
-let keyLen = 64;
-let saltRnds = 12;
-
-const MIN_SALT_ROUNDS = 12;
-const MAX_SALT_ROUNDS = 100;
-
-const MIN_KEY_LENGTH = 2;
-const MAX_KEY_LENGTH = 256;
+let keyLen = DEFAULT_KEY_LEN;
+let saltRnds = DEFAULT_SALT_RNDS;
 
 /**
  * Timing-Safe Equality (TSE) function for comparing two buffers in constant time.
@@ -101,9 +101,9 @@ function getSaltRounds(): number {
  */
 function setSaltRounds(rnds: number): boolean {
   try {
-    isValidInteger(rnds, MIN_SALT_ROUNDS, MAX_SALT_ROUNDS, true, true);
+    isValidInteger(rnds, MIN_SALT_RNDS, MAX_SALT_RNDS, true, true);
   } catch (err) {
-    const e = new InvalidSaltRoundsError(MIN_SALT_ROUNDS, MAX_SALT_ROUNDS);
+    const e = new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS);
     e.cause = err;
     throw e;
   }
@@ -131,9 +131,9 @@ function getKeyLen(): number {
  */
 function setKeyLen(len: number): boolean {
   try {
-    isValidInteger(len, MIN_KEY_LENGTH, MAX_KEY_LENGTH, true, true);
+    isValidInteger(len, MIN_KEY_LEN, MAX_KEY_LEN, true, true);
   } catch (err) {
-    const e = new InvalidKeyLengthError(MIN_KEY_LENGTH, MAX_KEY_LENGTH);
+    const e = new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN);
     e.cause = err;
     throw e;
   }
@@ -157,13 +157,13 @@ function getDigest(): string {
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
  * @returns {boolean} True if the hash function was successfully set.
- * @throws {InvalidDigestError} If func is not a valid hash function from the available list.
+ * @throws {InvalidDigestFunctionError} If func is not a valid hash function from the available list.
  */
 function setDigest(func: string): boolean {
   try {
     isIn(digests, func, undefined, true);
   } catch (err) {
-    const e = new InvalidDigestError();
+    const e = new InvalidDigestFunctionError();
     e.cause = err;
     throw e;
   }
@@ -282,7 +282,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * @returns {string} The salted hash as a hex string, with the salt prepended.
  *
  * @throws {InvalidStringToEncryptError} If `str` is not a non-empty string.
- * @throws {InvalidBase64SecretError} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {InvalidSecretToEncryptError} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const secret = rndB64Secret();
@@ -307,7 +307,7 @@ function encrypt(str: string, b64Secret: string): string {
   try {
     secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
   } catch (err) {
-    const e = new InvalidBase64SecretError();
+    const e = new InvalidSecretToEncryptError();
     e.cause = err;
     throw e;
   }

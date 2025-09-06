@@ -56,18 +56,18 @@ export class HashLengthMismatchError extends HashitakaError {
  * try {
  *   b64Decode(invalidBase64String);
  * } catch (error) {
- *   if (error instanceof InvalidBase64FormatError) {
+ *   if (error instanceof InvalidBase64ToDecodeError) {
  *     console.log(error.message); // "Invalid base64 format"
  *   }
  * }
  * ```
  */
-export class InvalidBase64FormatError extends HashitakaError {
-  readonly code = "INVALID_BASE64_FORMAT";
+export class InvalidBase64ToDecodeError extends HashitakaError {
+  readonly code = "INVALID_BASE64_TO_DECODE";
   readonly statusCode = 400;
 
   constructor(urlSafe: boolean) {
-    const message = `${HASHITAKA_PREFIX}Received invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} to decode`;
+    const message = `${HASHITAKA_PREFIX}Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
     super(message);
   }
 }
@@ -80,18 +80,18 @@ export class InvalidBase64FormatError extends HashitakaError {
  * try {
  *   b64Encode("");
  * } catch (error) {
- *   if (error instanceof InvalidStringForEncodingError) {
+ *   if (error instanceof InvalidStringToEncodeError) {
  *     console.log(error.message); // "Cannot encode invalid or empty string"
  *   }
  * }
  * ```
  */
-export class InvalidStringForEncodingError extends HashitakaError {
-  readonly code = "INVALID_STRING_FOR_ENCODING";
+export class InvalidStringToEncodeError extends HashitakaError {
+  readonly code = "INVALID_STRING_TO_ENCODE";
   readonly statusCode = 400;
 
   constructor() {
-    const message = `${HASHITAKA_PREFIX}Received invalid string to encode in base64`;
+    const message = `${HASHITAKA_PREFIX}Invalid string to encode in base64`;
     super(message);
   }
 }
@@ -110,12 +110,12 @@ export class InvalidStringForEncodingError extends HashitakaError {
  * }
  * ```
  */
-export class InvalidStringForCompareError extends HashitakaError {
-  readonly code = "INVALID_STRING_FOR_COMPARE";
+export class InvalidStringToCompareError extends HashitakaError {
+  readonly code = "INVALID_STRING_TO_COMPARE";
   readonly statusCode = 400;
 
   constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid string for comparison`;
+    const message = `${HASHITAKA_PREFIX}Invalid string for hash comparison`;
     super(message);
   }
 }
@@ -134,8 +134,8 @@ export class InvalidStringForCompareError extends HashitakaError {
  * }
  * ```
  */
-export class InvalidHashForCompareError extends HashitakaError {
-  readonly code = "INVALID_HASH_FOR_COMPARE";
+export class InvalidHashToCompareError extends HashitakaError {
+  readonly code = "INVALID_HASH_TO_COMPARE";
   readonly statusCode = 400;
 
   constructor() {
@@ -200,14 +200,14 @@ export class InvalidKeyLengthError extends HashitakaError {
  * try {
  *   setDigest("invalidHash");
  * } catch (error) {
- *   if (error instanceof InvalidDigestError) {
+ *   if (error instanceof InvalidDigestFunctionError) {
  *     console.log(error.message); // "Invalid hash digest function"
  *   }
  * }
  * ```
  */
-export class InvalidDigestError extends HashitakaError {
-  readonly code = "INVALID_DIGEST";
+export class InvalidDigestFunctionError extends HashitakaError {
+  readonly code = "INVALID_DIGEST_FUNCTION";
   readonly statusCode = 400;
 
   constructor() {
@@ -296,14 +296,14 @@ export class InvalidStringToEncryptError extends HashitakaError {
  * try {
  *   encrypt("validString", "invalidBase64!");
  * } catch (error) {
- *   if (error instanceof InvalidBase64SecretError) {
+ *   if (error instanceof InvalidSecretToEncryptError) {
  *     console.log(error.message); // "Invalid base64 secret for encryption"
  *   }
  * }
  * ```
  */
-export class InvalidBase64SecretError extends HashitakaError {
-  readonly code = "INVALID_BASE64_SECRET";
+export class InvalidSecretToEncryptError extends HashitakaError {
+  readonly code = "INVALID_SECRET_TO_ENCRYPT";
   readonly statusCode = 400;
 
   constructor() {

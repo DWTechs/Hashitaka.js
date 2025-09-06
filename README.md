@@ -128,7 +128,7 @@ function getSaltRounds(): number {}
  *
  * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
  * @returns {boolean} True if the salt rounds were successfully set.
- * @throws {Error} If rnds is not a valid integer between 12 and 100.
+ * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 12 and 100.
  */
 function setSaltRounds(rnds: number): boolean {} // between 12 and 100
 
@@ -144,9 +144,9 @@ function getKeyLen(): number {}
  *
  * @param {number} len - The desired key length. Must be a valid integer between 2 and 256.
  * @returns {boolean} True if the key length was successfully set.
- * @throws {Error} If len is not a valid integer between 2 and 256.
+ * @throws {InvalidKeyLengthError} If len is not a valid integer between 2 and 256.
  */
-function setKeyLen(r: number): boolean {} // between 2 and 256
+function setKeyLen(len: number): boolean {} // between 2 and 256
 
 /**
  * Returns the hash function used for hashing.
@@ -161,9 +161,9 @@ function getDigest(): string {}
  *
  * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
  * @returns {boolean} True if the hash function was successfully set.
- * @throws {Error} If func is not a valid hash function from the available list.
+ * @throws {InvalidDigestError} If func is not a valid hash function from the available list.
  */
-function setDigest(d: string): boolean {}
+function setDigest(func: string): boolean {}
 
 /**
  * Returns the list of available hash functions.
@@ -234,8 +234,8 @@ function tse(a: Buffer, b: Buffer): boolean {}
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing. Must be a valid base64 string.
  * @returns {string} The salted hash as a hex string, with the salt prepended.
  *
- * @throws {Error} If `str` is not a non-empty string.
- * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
+ * @throws {InvalidStringToEncryptError} If `str` is not a non-empty string.
+ * @throws {InvalidSecretToEncryptError} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
  * const secret = rndB64Secret();
@@ -262,6 +262,7 @@ function encrypt( str: string, b64Secret: string ): string {}
  * @param {string} str - The input string to hash (e.g., a password).
  * @param {string} secret - The secret (pepper) to use for HMAC. Should be kept private.
  * @returns {string} The base64url-encoded HMAC hash of the input string.
+ * @throws {HmacCreationError} If HMAC creation fails due to invalid digest or secret.
  *
  * @example
  * const hashValue = hash("myPassword", "mySecretKey");
@@ -287,6 +288,7 @@ function hash(str: string, secret: string): string {}
  * @param {string} secret - The secret (pepper) to use for HMAC.
  * @param {string} salt - The salt to use for key derivation (should be random and unique per hash).
  * @returns {Buffer} The derived key as a Buffer.
+ * @throws {Pbkdf2DerivationError} If PBKDF2 key derivation fails due to invalid parameters or system issues.
  *
  * @example
  * const salt = randomSalt();
@@ -314,7 +316,8 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
  * @param {boolean} [urlSafe=false] - If true, decodes the secret using URL-safe base64 encoding.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
- * @throws {Error} If `str` or `hash` is not a non-empty string.
+ * @throws {InvalidStringToCompareError} If `str` is not a non-empty string.
+ * @throws {InvalidHashToCompareError} If `hash` is not a non-empty string.
  * @throws {Error} If `b64Secret` is not a valid base64 encoded string.
  *
  * @example
@@ -362,7 +365,7 @@ function rndB64Secret(length = 32, urlSafe = true): string {}
  * @param {string} str - The base64 encoded string to decode.
  * @param {boolean} urlSafe - A boolean indicating if the input string is URL safe. Defaults to true.
  * @returns {string} The decoded string in UTF-8 format.
- * @throws {InvalidBase64FormatError} If `str` is not a valid base64 string.
+ * @throws {InvalidBase64ToDecodeError} If `str` is not a valid base64 string.
  */
 function b64Decode(str: string, urlSafe = true): string {}
 
@@ -372,7 +375,7 @@ function b64Decode(str: string, urlSafe = true): string {}
  * @param {string} str - The string to be encoded.
  * @param {boolean} urlSafe - Optional boolean to determine if the output should be URL safe. Defaults to true.
  * @returns {string} The Base64 encoded string. If `urlSafe` is true, the output will be modified to be URL safe.
- * @throws {InvalidStringForEncodingError} If `str` is not a non-empty string.
+ * @throws {InvalidStringToEncodeError} If `str` is not a non-empty string.
  */
 function b64Encode(str: string, urlSafe = true): string {}
 
@@ -381,13 +384,6 @@ function b64Encode(str: string, urlSafe = true): string {}
 ## Error Handling
 
 Hashitaka uses a structured error system that helps you identify and handle specific error cases. All errors extend from a base `HashitakaError` class.
-
-### Error Classes Hierarchy
-
-```
-HashitakaError (abstract base class)
-├── HashLengthMismatchError
-```
 
 ### Common Properties
 
@@ -424,18 +420,18 @@ try {
 
 | Error Class | Code | Status Code | Description |
 |-------------|------|-------------|-------------|
-| HashLengthMismatchError | HASH_LENGTH_MISMATCH | 400 | Hashes must have the same byte length |
-| InvalidBase64FormatError | INVALID_BASE64_FORMAT | 400 | Cannot decode invalid base64 format |
-| InvalidStringForEncodingError | INVALID_STRING_FOR_ENCODING | 400 | Cannot encode invalid or empty string |
-| InvalidStringForCompareError | INVALID_STRING_FOR_COMPARE | 400 | Invalid string for hash comparison |
-| InvalidHashError | INVALID_HASH_FOR_COMPARE | 400 | Invalid stored hash for comparison |
-| InvalidSaltRoundsError | INVALID_SALT_ROUNDS | 400 | Invalid salt rounds, must be between 12 and 100 |
-| InvalidKeyLengthError | INVALID_KEY_LENGTH | 400 | Invalid key length, must be between 2 and 256 |
-| InvalidDigestError | INVALID_DIGEST | 400 | Invalid hash digest function |
+| HashLengthMismatchError     | HASH_LENGTH_MISMATCH      | 400 | Hashes must have the same byte length |
+| InvalidBase64ToDecodeError  | INVALID_BASE64_TO_DECODE  | 400 | Invalid base64 string to decode |
+| InvalidStringToEncodeError  | INVALID_STRING_TO_ENCODE  | 400 | Invalid string to encode in base64 |
+| InvalidStringToCompareError | INVALID_STRING_TO_COMPARE | 400 | Invalid string for hash comparison |
+| InvalidHashToCompareError   | INVALID_HASH_TO_COMPARE   | 400 | Invalid hash for comparison |
 | InvalidStringToEncryptError | INVALID_STRING_TO_ENCRYPT | 400 | Invalid string to encrypt |
-| InvalidBase64SecretError | INVALID_BASE64_SECRET | 400 | Invalid base64 secret for encryption |
-| HmacCreationError | HMAC_CREATION_FAILED | 500 | Failed to create HMAC hash |
-| Pbkdf2DerivationError | PBKDF2_DERIVATION_FAILED | 500 | Failed to derive key using PBKDF2 |
+| InvalidSecretToEncryptError | INVALID_SECRET_TO_ENCRYPT | 400 | Invalid base64 secret for encryption |
+| InvalidSaltRoundsError      | INVALID_SALT_ROUNDS       | 400 | Invalid salt rounds, must be between 12 and 100 |
+| InvalidKeyLengthError       | INVALID_KEY_LENGTH        | 400 | Invalid key length, must be between 2 and 256 |
+| InvalidDigestFunctionError  | INVALID_DIGEST_FUNCTION   | 400 | Invalid hash digest function |
+| HmacCreationError           | HMAC_CREATION_FAILED      | 500 | Failed to create HMAC hash |
+| Pbkdf2DerivationError       | PBKDF2_DERIVATION_FAILED  | 500 | Failed to derive key using PBKDF2 |
 
 
 ## Express.js

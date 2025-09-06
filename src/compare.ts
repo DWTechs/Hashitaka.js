@@ -1,8 +1,8 @@
 import { isString } from "@dwtechs/checkard";
 import { tse, pbkdf2 } from "./hash";
 import { b64Decode } from "./base64.js";
-import { InvalidStringForCompareError, 
-         InvalidHashForCompareError } from "./errors";
+import { InvalidStringToCompareError, 
+         InvalidHashToCompareError } from "./errors";
 
 /**
  * Verifies whether a plaintext string matches a previously hashed value using the same secret and salt extraction logic.
@@ -44,7 +44,7 @@ function compare(
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    const e = new InvalidStringForCompareError();
+    const e = new InvalidStringToCompareError();
     e.cause = err;
     throw e;
   }
@@ -52,7 +52,7 @@ function compare(
   try {
     isString(hash, "!0", null, true);
   } catch (err) {
-    const e = new InvalidHashForCompareError();
+    const e = new InvalidHashToCompareError();
     e.cause = err;
     throw e;
   }

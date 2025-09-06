@@ -1,10 +1,10 @@
 import { randomBytes } from "node:crypto";
 import { isValidInteger } from "@dwtechs/checkard";
 import { b64Encode } from "./base64.js";
-
-const DEFAULT_LEN = 32;
-const MIN_SECRET_LEN = 1;
-const MAX_SECRET_LEN = 262144;
+import { DEFAULT_SECRET_LEN, 
+		 MIN_SECRET_LEN, 
+		 MAX_SECRET_LEN 
+	   } from "./constants.js";
 
 /**
  * Generates a random string of the specified length, encoded in base64.
@@ -13,8 +13,8 @@ const MAX_SECRET_LEN = 262144;
  * @param {boolean} [urlSafe=true] - If true, uses URL-safe base64 encoding. Defaults to true.
  * @returns {string} The generated random string encoded in base64.
  */
-function create(len: number = DEFAULT_LEN, urlSafe: boolean = true): string {
-	const kl = isValidInteger(len, MIN_SECRET_LEN, MAX_SECRET_LEN) ? len : DEFAULT_LEN;
+function create(len: number = DEFAULT_SECRET_LEN, urlSafe: boolean = true): string {
+	const kl = isValidInteger(len, MIN_SECRET_LEN, MAX_SECRET_LEN) ? len : DEFAULT_SECRET_LEN;
 	return b64Encode(randomBytes(kl).toString("utf8"), urlSafe);
 }
 

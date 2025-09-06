@@ -1,4 +1,4 @@
-# 0.3.1 (Sep 2nd 2025)
+# 0.3.1 (Sep 5th 2025)
 
 - Added `urlSafe` parameter to the `compare` and `rndB64Secret` function to chose from URL-safe base64 secrets or standard base64 secrets
 - Delete logs dependency
