@@ -3,7 +3,7 @@
 - Added `urlSafe` parameter to the `compare` and `rndB64Secret` function to chose from URL-safe base64 secrets or standard base64 secrets
 - Delete logs dependency
 - Replaced logs by proper custom errors
-- Updated @dwtechs/checkard to version 3.5.01
+- Updated @dwtechs/checkard to version 3.5.1
 - `setDigest()`, `setKeyLen()`, `setSaltRounds()`, `hash()`, `pbkdf2()`, `tse()`, `encrypt()`, `b64Encode()`, `b64Decode()` and `compare()` functions throws custom errors on top of @dwtechs/Checkard errors
 
 # 0.3.0 (Aug 23th 2025)
