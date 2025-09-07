@@ -23,8 +23,7 @@ describe("compare", () => {
 
   test("Throws error when comparing with the right password with url-safe secret and non url-safe comparison", () => {
 		expect(() => compare(password, hashedPassword, secret, false)).toThrow();
-		// log.error(err.stack);
-  	// log.error(err.message);
+
     let caughtError;
 		try {
 			compare(password, hashedPassword, secret, false);
@@ -39,7 +38,6 @@ describe("compare", () => {
 		console.log('\n=== Error Stack Information ===');
 		console.log('Main Error Stack:');
 		console.log(caughtError.stack);
-		// console.log('\nMain Error Message:', caughtError.message);
 		
 		console.log('================================\n');
 	});
