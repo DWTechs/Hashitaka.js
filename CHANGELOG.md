@@ -1,6 +1,6 @@
 # 0.3.1 (Sep 5th 2025)
 
-- Added `urlSafe` parameter to the `compare` and `rndB64Secret` function to chose from URL-safe base64 secrets or standard base64 secrets
+- Add `urlSafe` parameter to the `compare` and `rndB64Secret` functions to chose from URL-safe base64 secrets or standard base64 secrets
 - Delete logs dependency
 - Replaced logs by proper custom errors
 - Updated @dwtechs/checkard to version 3.5.1
