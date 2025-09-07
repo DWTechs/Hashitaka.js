@@ -10,12 +10,12 @@ describe("compare", () => {
   const otherHashedPassword2 = encrypt(password, secret);
 	const anotherHashedPassword = encrypt(password, secret);
   const anotherHashedPassword2 = encrypt(password, secret);
-  console.log("hashedPassword", hashedPassword);
-  console.log("hashedPassword2", hashedPassword2);
-  console.log("otherHashedPassword", otherHashedPassword);
-  console.log("otherHashedPassword2", otherHashedPassword2);
-  console.log("anotherHashedPassword", anotherHashedPassword);
-  console.log("anotherHashedPassword2", anotherHashedPassword2);
+//   console.log("hashedPassword", hashedPassword);
+//   console.log("hashedPassword2", hashedPassword2);
+//   console.log("otherHashedPassword", otherHashedPassword);
+//   console.log("otherHashedPassword2", otherHashedPassword2);
+//   console.log("anotherHashedPassword", anotherHashedPassword);
+//   console.log("anotherHashedPassword2", anotherHashedPassword2);
 
 	test("returns true when comparing with the right password with url-safe secret and url-safe comparison", () => {
 		expect(compare(password, hashedPassword, secret, true)).toBe(true);
@@ -23,6 +23,25 @@ describe("compare", () => {
 
   test("Throws error when comparing with the right password with url-safe secret and non url-safe comparison", () => {
 		expect(() => compare(password, hashedPassword, secret, false)).toThrow();
+		// log.error(err.stack);
+  	// log.error(err.message);
+    let caughtError;
+		try {
+			compare(password, hashedPassword, secret, false);
+		} catch (err) {
+			caughtError = err;
+		}
+		
+		// Verify error was thrown
+		expect(caughtError).toBeDefined();
+		
+		// Display the error stack
+		console.log('\n=== Error Stack Information ===');
+		console.log('Main Error Stack:');
+		console.log(caughtError.stack);
+		// console.log('\nMain Error Message:', caughtError.message);
+		
+		console.log('================================\n');
 	});
 
 	test("returns true when comparing another hash with the right password with url-safe secret and url-safe comparison", () => {

@@ -14,9 +14,7 @@ function b64Decode(str: string, urlSafe = true): string {
   try {
     isBase64(str, urlSafe, true);
   } catch (err) {
-    const e = new InvalidBase64ToDecodeError(urlSafe);
-    e.cause = err;
-    throw e;
+    throw new InvalidBase64ToDecodeError(urlSafe, err);
   }
 
   if (urlSafe)
@@ -40,9 +38,7 @@ function b64Encode(str: string, urlSafe = true): string {
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    const e = new InvalidStringToEncodeError();
-    e.cause = err;
-    throw e;
+    throw new InvalidStringToEncodeError(err);
   }
   
   let b64 = Buffer.from(str).toString("base64");

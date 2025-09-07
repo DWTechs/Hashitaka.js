@@ -44,17 +44,13 @@ function compare(
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    const e = new InvalidStringToCompareError();
-    e.cause = err;
-    throw e;
+    throw new InvalidStringToCompareError(err);
   }
   
   try {
     isString(hash, "!0", null, true);
   } catch (err) {
-    const e = new InvalidHashToCompareError();
-    e.cause = err;
-    throw e;
+    throw new InvalidHashToCompareError(err);
   }
   
   const secret = b64Decode(b64Secret, urlSafe);

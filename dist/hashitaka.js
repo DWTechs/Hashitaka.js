@@ -27,106 +27,109 @@ https://github.com/DWTechs/Hashitaka.js
 import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { isBase64, isString, isValidInteger, isIn } from '@dwtechs/checkard';
 
-const HASHITAKA_PREFIX = "Hashitaka: ";
+const HASHITAKA_PREFIX = "Hashitaka - ";
+function chainMessage(message, err) {
+    return `${message} - caused by: ${err.message}`;
+}
 class HashitakaError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = this.constructor.name;
+    constructor(message, causedBy) {
+        super(causedBy ? chainMessage(message, causedBy) : message);
+        this.name = `${HASHITAKA_PREFIX}${this.constructor.name}`;
         if (Error.captureStackTrace)
             Error.captureStackTrace(this, this.constructor);
     }
 }
 class HashLengthMismatchError extends HashitakaError {
-    constructor(message = `${HASHITAKA_PREFIX}Hashes must have the same byte length to be compared`) {
+    constructor(message = "Hashes must have the same byte length to be compared") {
         super(message);
         this.code = "HASH_LENGTH_MISMATCH";
         this.statusCode = 400;
     }
 }
 class InvalidBase64ToDecodeError extends HashitakaError {
-    constructor(urlSafe) {
-        const message = `${HASHITAKA_PREFIX}Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
-        super(message);
+    constructor(urlSafe, causedBy) {
+        const message = `Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
+        super(message, causedBy);
         this.code = "INVALID_BASE64_TO_DECODE";
         this.statusCode = 400;
     }
 }
 class InvalidStringToEncodeError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid string to encode in base64`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid string to encode in base64";
+        super(message, causedBy);
         this.code = "INVALID_STRING_TO_ENCODE";
         this.statusCode = 400;
     }
 }
 class InvalidStringToCompareError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid string for hash comparison`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid string for hash comparison";
+        super(message, causedBy);
         this.code = "INVALID_STRING_TO_COMPARE";
         this.statusCode = 400;
     }
 }
 class InvalidHashToCompareError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid hash for comparison`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid hash for comparison";
+        super(message, causedBy);
         this.code = "INVALID_HASH_TO_COMPARE";
         this.statusCode = 400;
     }
 }
 class InvalidSaltRoundsError extends HashitakaError {
-    constructor(min, max) {
-        const message = `${HASHITAKA_PREFIX}Invalid salt rounds, must be between ${min} and ${max}`;
-        super(message);
+    constructor(min, max, causedBy) {
+        const message = `Invalid salt rounds, must be between ${min} and ${max}`;
+        super(message, causedBy);
         this.code = "INVALID_SALT_ROUNDS";
         this.statusCode = 400;
     }
 }
 class InvalidKeyLengthError extends HashitakaError {
-    constructor(min, max) {
-        const message = `${HASHITAKA_PREFIX}Invalid key length, must be between ${min} and ${max}`;
-        super(message);
+    constructor(min, max, causedBy) {
+        const message = `Invalid key length, must be between ${min} and ${max}`;
+        super(message, causedBy);
         this.code = "INVALID_KEY_LENGTH";
         this.statusCode = 400;
     }
 }
 class InvalidDigestFunctionError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid hash digest function`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid hash digest function";
+        super(message, causedBy);
         this.code = "INVALID_DIGEST_FUNCTION";
         this.statusCode = 400;
     }
 }
 class HmacCreationError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Failed to create HMAC hash`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Failed to create HMAC hash";
+        super(message, causedBy);
         this.code = "HMAC_CREATION_FAILED";
         this.statusCode = 500;
     }
 }
 class Pbkdf2DerivationError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Failed to derive key using PBKDF2`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Failed to derive key using PBKDF2";
+        super(message, causedBy);
         this.code = "PBKDF2_DERIVATION_FAILED";
         this.statusCode = 500;
     }
 }
 class InvalidStringToEncryptError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid string to encrypt`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid string to encrypt";
+        super(message, causedBy);
         this.code = "INVALID_STRING_TO_ENCRYPT";
         this.statusCode = 400;
     }
 }
 class InvalidSecretToEncryptError extends HashitakaError {
-    constructor() {
-        const message = `${HASHITAKA_PREFIX}Invalid base64 secret for encryption`;
-        super(message);
+    constructor(causedBy) {
+        const message = "Invalid base64 secret for encryption";
+        super(message, causedBy);
         this.code = "INVALID_SECRET_TO_ENCRYPT";
         this.statusCode = 400;
     }
@@ -137,9 +140,7 @@ function b64Decode(str, urlSafe = true) {
         isBase64(str, urlSafe, true);
     }
     catch (err) {
-        const e = new InvalidBase64ToDecodeError(urlSafe);
-        e.cause = err;
-        throw e;
+        throw new InvalidBase64ToDecodeError(urlSafe, err);
     }
     if (urlSafe)
         str = str.replace(/-/g, "+").replace(/_/g, "/");
@@ -150,9 +151,7 @@ function b64Encode(str, urlSafe = true) {
         isString(str, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidStringToEncodeError();
-        e.cause = err;
-        throw e;
+        throw new InvalidStringToEncodeError(err);
     }
     let b64 = Buffer.from(str).toString("base64");
     if (urlSafe)
@@ -192,9 +191,7 @@ function setSaltRounds(rnds) {
         isValidInteger(rnds, MIN_SALT_RNDS, MAX_SALT_RNDS, true, true);
     }
     catch (err) {
-        const e = new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS);
-        e.cause = err;
-        throw e;
+        throw new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS, err);
     }
     saltRnds = rnds;
     return true;
@@ -207,9 +204,7 @@ function setKeyLen(len) {
         isValidInteger(len, MIN_KEY_LEN, MAX_KEY_LEN, true, true);
     }
     catch (err) {
-        const e = new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN);
-        e.cause = err;
-        throw e;
+        throw new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN, err);
     }
     keyLen = len;
     return true;
@@ -222,9 +217,7 @@ function setDigest(func) {
         isIn(digests, func, undefined, true);
     }
     catch (err) {
-        const e = new InvalidDigestFunctionError();
-        e.cause = err;
-        throw e;
+        throw new InvalidDigestFunctionError(err);
     }
     digest = func;
     return true;
@@ -237,9 +230,7 @@ function hash(str, secret) {
         return createHmac(digest, secret).update(str).digest("base64url");
     }
     catch (err) {
-        const e = new HmacCreationError();
-        e.cause = err;
-        throw e;
+        throw new HmacCreationError(err);
     }
 }
 function randomSalt() {
@@ -250,9 +241,7 @@ function pbkdf2(str, secret, salt) {
         return pbkdf2Sync(hash(str, secret), salt, saltRnds, keyLen, digest);
     }
     catch (err) {
-        const e = new Pbkdf2DerivationError();
-        e.cause = err;
-        throw e;
+        throw new Pbkdf2DerivationError(err);
     }
 }
 function encrypt(str, b64Secret) {
@@ -260,18 +249,14 @@ function encrypt(str, b64Secret) {
         isString(str, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidStringToEncryptError();
-        e.cause = err;
-        throw e;
+        throw new InvalidStringToEncryptError(err);
     }
     let secret;
     try {
         secret = b64Decode(b64Secret, true);
     }
     catch (err) {
-        const e = new InvalidSecretToEncryptError();
-        e.cause = err;
-        throw e;
+        throw new InvalidSecretToEncryptError(err);
     }
     const salt = randomSalt();
     return salt + pbkdf2(str, secret, salt).toString("hex");
@@ -282,17 +267,13 @@ function compare(str, hash, b64Secret, urlSafe = false) {
         isString(str, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidStringToCompareError();
-        e.cause = err;
-        throw e;
+        throw new InvalidStringToCompareError(err);
     }
     try {
         isString(hash, "!0", null, true);
     }
     catch (err) {
-        const e = new InvalidHashToCompareError();
-        e.cause = err;
-        throw e;
+        throw new InvalidHashToCompareError(err);
     }
     const secret = b64Decode(b64Secret, urlSafe);
     const salt = hash.slice(0, 32);

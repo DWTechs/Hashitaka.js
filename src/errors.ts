@@ -1,12 +1,14 @@
-/**
- * Custom error classes for the library
- */
 
-/**
- * Prefix for all Hashitaka error messages
- */
-const HASHITAKA_PREFIX = "Hashitaka: ";
+const HASHITAKA_PREFIX = "Hashitaka - ";
   
+/**
+ * Chains the current error message with the underlying error message
+ * @param err The underlying error that caused this error
+ */
+function chainMessage(message: string, err: Error): string {
+  return `${message} - caused by: ${err.message}`;
+}
+
 /**
  * Base class for all Hashitaka errors
  */
@@ -14,9 +16,9 @@ export abstract class HashitakaError extends Error {
   abstract readonly code: string;
   abstract readonly statusCode: number;
   
-  constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
+  constructor(message: string, causedBy?: Error) {
+    super(causedBy ? chainMessage(message, causedBy) : message);
+    this.name = `${HASHITAKA_PREFIX}${this.constructor.name}`;
     
     // Maintains proper stack trace for where the error was thrown (only available on V8)
     if (Error.captureStackTrace)
@@ -34,7 +36,7 @@ export abstract class HashitakaError extends Error {
  *   tse(bufferA, bufferB);
  * } catch (error) {
  *   if (error instanceof HashLengthMismatchError) {
- *     console.log(error.message); // "Hashes must have the same byte length"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -43,7 +45,7 @@ export class HashLengthMismatchError extends HashitakaError {
   readonly code = "HASH_LENGTH_MISMATCH";
   readonly statusCode = 400;
 
-  constructor(message = `${HASHITAKA_PREFIX}Hashes must have the same byte length to be compared`) {
+  constructor(message = "Hashes must have the same byte length to be compared") {
     super(message);
   }
 }
@@ -57,7 +59,7 @@ export class HashLengthMismatchError extends HashitakaError {
  *   b64Decode(invalidBase64String);
  * } catch (error) {
  *   if (error instanceof InvalidBase64ToDecodeError) {
- *     console.log(error.message); // "Invalid base64 format"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -66,9 +68,9 @@ export class InvalidBase64ToDecodeError extends HashitakaError {
   readonly code = "INVALID_BASE64_TO_DECODE";
   readonly statusCode = 400;
 
-  constructor(urlSafe: boolean) {
-    const message = `${HASHITAKA_PREFIX}Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
-    super(message);
+  constructor(urlSafe: boolean, causedBy?: Error) {
+    const message = `Invalid base64 ${urlSafe ? 'URL-safe' : 'non URL-safe'} string to decode`;
+    super(message, causedBy);
   }
 }
 
@@ -81,7 +83,7 @@ export class InvalidBase64ToDecodeError extends HashitakaError {
  *   b64Encode("");
  * } catch (error) {
  *   if (error instanceof InvalidStringToEncodeError) {
- *     console.log(error.message); // "Cannot encode invalid or empty string"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -90,9 +92,9 @@ export class InvalidStringToEncodeError extends HashitakaError {
   readonly code = "INVALID_STRING_TO_ENCODE";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid string to encode in base64`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Invalid string to encode in base64";
+    super(message, causedBy);
   }
 }
 
@@ -105,7 +107,7 @@ export class InvalidStringToEncodeError extends HashitakaError {
  *   compare("", storedHash, secret);
  * } catch (error) {
  *   if (error instanceof InvalidPlaintextError) {
- *     console.log(error.message); // "Invalid plaintext string for comparison"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -114,9 +116,9 @@ export class InvalidStringToCompareError extends HashitakaError {
   readonly code = "INVALID_STRING_TO_COMPARE";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid string for hash comparison`;
-    super(message);
+  constructor(causedBy: Error) {
+    const message = "Invalid string for hash comparison";
+    super(message, causedBy);
   }
 }
 
@@ -129,7 +131,7 @@ export class InvalidStringToCompareError extends HashitakaError {
  *   compare("userInput", "", secret);
  * } catch (error) {
  *   if (error instanceof InvalidStoredHashError) {
- *     console.log(error.message); // "Invalid stored hash for comparison"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -138,9 +140,9 @@ export class InvalidHashToCompareError extends HashitakaError {
   readonly code = "INVALID_HASH_TO_COMPARE";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid hash for comparison`;
-    super(message);
+  constructor(causedBy: Error) {
+    const message = "Invalid hash for comparison";
+    super(message, causedBy);
   }
 }
 
@@ -153,7 +155,7 @@ export class InvalidHashToCompareError extends HashitakaError {
  *   setSaltRounds(5);
  * } catch (error) {
  *   if (error instanceof InvalidSaltRoundsError) {
- *     console.log(error.message); // "Invalid salt rounds, must be between 12 and 100"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -162,9 +164,9 @@ export class InvalidSaltRoundsError extends HashitakaError {
   readonly code = "INVALID_SALT_ROUNDS";
   readonly statusCode = 400;
 
-  constructor(min: number, max: number) {
-    const message = `${HASHITAKA_PREFIX}Invalid salt rounds, must be between ${min} and ${max}`;
-    super(message);
+  constructor(min: number, max: number, causedBy?: Error) {
+    const message = `Invalid salt rounds, must be between ${min} and ${max}`;
+    super(message, causedBy);
   }
 }
 
@@ -177,7 +179,7 @@ export class InvalidSaltRoundsError extends HashitakaError {
  *   setKeyLen(1);
  * } catch (error) {
  *   if (error instanceof InvalidKeyLengthError) {
- *     console.log(error.message); // "Invalid key length, must be between 2 and 256"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -186,9 +188,9 @@ export class InvalidKeyLengthError extends HashitakaError {
   readonly code = "INVALID_KEY_LENGTH";
   readonly statusCode = 400;
 
-  constructor(min: number, max: number) {
-    const message = `${HASHITAKA_PREFIX}Invalid key length, must be between ${min} and ${max}`;
-    super(message);
+  constructor(min: number, max: number, causedBy?: Error) {
+    const message = `Invalid key length, must be between ${min} and ${max}`;
+    super(message, causedBy);
   }
 }
 
@@ -201,7 +203,7 @@ export class InvalidKeyLengthError extends HashitakaError {
  *   setDigest("invalidHash");
  * } catch (error) {
  *   if (error instanceof InvalidDigestFunctionError) {
- *     console.log(error.message); // "Invalid hash digest function"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -210,9 +212,9 @@ export class InvalidDigestFunctionError extends HashitakaError {
   readonly code = "INVALID_DIGEST_FUNCTION";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid hash digest function`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Invalid hash digest function";
+    super(message, causedBy);
   }
 }
 
@@ -225,7 +227,7 @@ export class InvalidDigestFunctionError extends HashitakaError {
  *   hash("data", "secret");
  * } catch (error) {
  *   if (error instanceof HmacCreationError) {
- *     console.log(error.message); // "Failed to create HMAC hash"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -234,9 +236,9 @@ export class HmacCreationError extends HashitakaError {
   readonly code = "HMAC_CREATION_FAILED";
   readonly statusCode = 500;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Failed to create HMAC hash`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Failed to create HMAC hash";
+    super(message, causedBy);
   }
 }
 
@@ -249,7 +251,7 @@ export class HmacCreationError extends HashitakaError {
  *   pbkdf2("password", "secret", "salt");
  * } catch (error) {
  *   if (error instanceof Pbkdf2DerivationError) {
- *     console.log(error.message); // "Failed to derive key using PBKDF2"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -258,9 +260,9 @@ export class Pbkdf2DerivationError extends HashitakaError {
   readonly code = "PBKDF2_DERIVATION_FAILED";
   readonly statusCode = 500;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Failed to derive key using PBKDF2`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Failed to derive key using PBKDF2";
+    super(message, causedBy);
   }
 }
 
@@ -282,9 +284,9 @@ export class InvalidStringToEncryptError extends HashitakaError {
   readonly code = "INVALID_STRING_TO_ENCRYPT";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid string to encrypt`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Invalid string to encrypt";
+    super(message, causedBy);
   }
 }
 
@@ -297,7 +299,7 @@ export class InvalidStringToEncryptError extends HashitakaError {
  *   encrypt("validString", "invalidBase64!");
  * } catch (error) {
  *   if (error instanceof InvalidSecretToEncryptError) {
- *     console.log(error.message); // "Invalid base64 secret for encryption"
+ *     console.log(error.message);
  *   }
  * }
  * ```
@@ -306,8 +308,8 @@ export class InvalidSecretToEncryptError extends HashitakaError {
   readonly code = "INVALID_SECRET_TO_ENCRYPT";
   readonly statusCode = 400;
 
-  constructor() {
-    const message = `${HASHITAKA_PREFIX}Invalid base64 secret for encryption`;
-    super(message);
+  constructor(causedBy?: Error) {
+    const message = "Invalid base64 secret for encryption";
+    super(message, causedBy);
   }
 }

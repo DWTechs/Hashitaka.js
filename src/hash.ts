@@ -103,9 +103,7 @@ function setSaltRounds(rnds: number): boolean {
   try {
     isValidInteger(rnds, MIN_SALT_RNDS, MAX_SALT_RNDS, true, true);
   } catch (err) {
-    const e = new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS);
-    e.cause = err;
-    throw e;
+    throw new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS, err);
   }
   
 	saltRnds = rnds;
@@ -133,9 +131,7 @@ function setKeyLen(len: number): boolean {
   try {
     isValidInteger(len, MIN_KEY_LEN, MAX_KEY_LEN, true, true);
   } catch (err) {
-    const e = new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN);
-    e.cause = err;
-    throw e;
+    throw new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN, err);
   }
   
 	keyLen = len;
@@ -163,9 +159,7 @@ function setDigest(func: string): boolean {
   try {
     isIn(digests, func, undefined, true);
   } catch (err) {
-    const e = new InvalidDigestFunctionError();
-    e.cause = err;
-    throw e;
+    throw new InvalidDigestFunctionError(err);
   }
   
 	digest = func;
@@ -209,9 +203,7 @@ function hash(str: string, secret: string): string {
   try {
     return createHmac(digest, secret).update(str).digest("base64url");
   } catch (err) {
-    const e = new HmacCreationError();
-    e.cause = err;
-    throw e;
+    throw new HmacCreationError(err);
   }
 }
 
@@ -263,9 +255,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
       digest
     );
   } catch (err) {
-    const e = new Pbkdf2DerivationError();
-    e.cause = err;
-    throw e;
+    throw new Pbkdf2DerivationError(err);
   }
 }
 
@@ -298,18 +288,14 @@ function encrypt(str: string, b64Secret: string): string {
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    const e = new InvalidStringToEncryptError();
-    e.cause = err;
-    throw e;
+    throw new InvalidStringToEncryptError(err);
   }
   
   let secret: string;
   try {
     secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
   } catch (err) {
-    const e = new InvalidSecretToEncryptError();
-    e.cause = err;
-    throw e;
+    throw new InvalidSecretToEncryptError(err);
   }
   
   const salt = randomSalt();
