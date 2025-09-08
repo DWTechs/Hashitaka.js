@@ -3,7 +3,6 @@
 [![npm version](https://badge.fury.io/js/%40dwtechs%2Fhashitaka.svg)](https://www.npmjs.com/package/@dwtechs/hashitaka)
 [![last version release date](https://img.shields.io/github/release-date/DWTechs/Hashitaka.js)](https://www.npmjs.com/package/@dwtechs/hashitaka)
 ![Jest:coverage](https://img.shields.io/badge/Jest:coverage-88%25-brightgreen.svg)
-[![minified size](https://img.shields.io/bundlephobia/min/@dwtechs/hashitaka?color=brightgreen)](https://www.npmjs.com/package/@dwtechs/hashitaka)
 
 - [Synopsis](#synopsis)
 - [Support](#support)
