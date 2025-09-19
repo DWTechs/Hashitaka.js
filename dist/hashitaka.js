@@ -27,14 +27,24 @@ https://github.com/DWTechs/Hashitaka.js
 import { getHashes, timingSafeEqual, createHmac, pbkdf2Sync, randomBytes } from 'node:crypto';
 import { isBase64, isString, isValidInteger, isIn } from '@dwtechs/checkard';
 
-const HASHITAKA_PREFIX = "Hashitaka - ";
+const LOGS_PREFIX = "Hashitaka: ";
+const DEFAULT_SALT_RNDS = 12;
+const MIN_SALT_RNDS = 12;
+const MAX_SALT_RNDS = 100;
+const DEFAULT_KEY_LEN = 64;
+const MIN_KEY_LEN = 2;
+const MAX_KEY_LEN = 256;
+const DEFAULT_SECRET_LEN = 32;
+const MIN_SECRET_LEN = 1;
+const MAX_SECRET_LEN = 262144;
+
 function chainMessage(message, err) {
     return `${message} - caused by: ${err.message}`;
 }
 class HashitakaError extends Error {
     constructor(message, causedBy) {
         super(causedBy ? chainMessage(message, causedBy) : message);
-        this.name = `${HASHITAKA_PREFIX}${this.constructor.name}`;
+        this.name = `${LOGS_PREFIX}${this.constructor.name}`;
         if (Error.captureStackTrace)
             Error.captureStackTrace(this, this.constructor);
     }
@@ -163,16 +173,6 @@ function b64Encode(str, urlSafe = true) {
 function pad(str) {
     return "=".repeat((4 - (str.length % 4)) % 4);
 }
-
-const DEFAULT_SALT_RNDS = 12;
-const MIN_SALT_RNDS = 12;
-const MAX_SALT_RNDS = 100;
-const DEFAULT_KEY_LEN = 64;
-const MIN_KEY_LEN = 2;
-const MAX_KEY_LEN = 256;
-const DEFAULT_SECRET_LEN = 32;
-const MIN_SECRET_LEN = 1;
-const MAX_SECRET_LEN = 262144;
 
 const digests = getHashes();
 let digest = "sha256";
