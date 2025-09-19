@@ -1,6 +1,6 @@
 
-const HASHITAKA_PREFIX = "Hashitaka - ";
-  
+import { LOGS_PREFIX } from './constants';
+
 /**
  * Chains the current error message with the underlying error message
  * @param err The underlying error that caused this error
@@ -18,7 +18,7 @@ export abstract class HashitakaError extends Error {
   
   constructor(message: string, causedBy?: Error) {
     super(causedBy ? chainMessage(message, causedBy) : message);
-    this.name = `${HASHITAKA_PREFIX}${this.constructor.name}`;
+    this.name = `${LOGS_PREFIX}${this.constructor.name}`;
     
     // Maintains proper stack trace for where the error was thrown (only available on V8)
     if (Error.captureStackTrace)
