@@ -72,14 +72,14 @@ declare function setKeyLen(len: number): boolean;
 declare function getDigest(): string;
 declare function setDigest(func: string): boolean;
 declare function getDigests(): string[];
-declare function encrypt(str: string, b64Secret: string): string;
-declare function compare(str: string, hash: string, b64Secret: string, urlSafe?: boolean): boolean;
+declare function encrypt(str: string, b64Secret: string): Promise<string>;
+declare function compare(str: string, hash: string, b64Secret: string, urlSafe?: boolean): Promise<boolean>;
 declare function rndB64Secret(len?: number, urlSafe?: boolean): string;
 declare function b64Decode(str: string, urlSafe?: boolean): string;
 declare function b64Encode(str: string, urlSafe?: boolean): string;
 declare function tse(a: Buffer, b: Buffer): boolean;
 declare function hash(str: string, secret: string): string;
-declare function pbkdf2(str: string, secret: string, salt: string): Buffer;
+declare function pbkdf2(str: string, secret: string, salt: string): Promise<Buffer>;
 
 export { 
   getSaltRounds,
