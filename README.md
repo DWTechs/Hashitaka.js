@@ -60,12 +60,12 @@ const { PWD_SECRET } = process.env;
  * If the password is correct, it calls the next() function to proceed with the request.
  * If the password is incorrect or missing, it calls next() with an error.
  */
-function comparePwd(req, res, next) {
+async function comparePwd(req, res, next) {
   
   const pwd = req.body.pwd; // from request
   const hash = req.user.hash; //from db
   try {
-    if (compare(pwd, hash, PWD_SECRET))
+    if (await compare(pwd, hash, PWD_SECRET))
       return next();
     return next({statusCode: 401, message: "Invalid password" });
   } catch (err) {
@@ -78,7 +78,7 @@ function comparePwd(req, res, next) {
 /**
  * This express middleware generates a random password for a user and encrypts it.
  */
-function createPwd(req, res, next) {
+async function createPwd(req, res, next) {
 
   const user = req.body.user;
   const options = {
@@ -91,7 +91,7 @@ function createPwd(req, res, next) {
     similarChars: true,
   };
   user.pwd = randomPwd(options);
-  user.pwdHash = encrypt(user.pwd, PWD_SECRET);
+  user.pwdHash = await encrypt(user.pwd, PWD_SECRET);
   next();
 
 }
@@ -141,11 +141,11 @@ function getKeyLen(): number {}
 /**
  * Sets the key length to the specified value for hashing.
  *
- * @param {number} len - The desired key length. Must be a valid integer between 2 and 256.
+ * @param {number} len - The desired key length. Must be a valid integer between 32 and 256.
  * @returns {boolean} True if the key length was successfully set.
- * @throws {InvalidKeyLengthError} If len is not a valid integer between 2 and 256.
+ * @throws {InvalidKeyLengthError} If len is not a valid integer between 32 and 256.
  */
-function setKeyLen(len: number): boolean {} // between 2 and 256
+function setKeyLen(len: number): boolean {} // between 32 and 256
 
 /**
  * Returns the hash function used for hashing.
@@ -246,7 +246,7 @@ function tse(a: Buffer, b: Buffer): boolean {}
  * - Use for password storage or verification, not for data you need to decrypt.
  * - For verification, use the `compare` function with the same secret.
  */
-function encrypt( str: string, b64Secret: string ): string {}
+async function encrypt( str: string, b64Secret: string ): Promise<string> {}
 
 
 /**
@@ -299,7 +299,7 @@ function hash(str: string, secret: string): string {}
  * - Use a unique, random salt for each password.
  * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
  */
-function pbkdf2(str: string, secret: string, salt: string): Buffer {}
+async function pbkdf2(str: string, secret: string, salt: string): Promise<Buffer> {}
 
 
 /**
@@ -332,7 +332,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {}
  * - Uses timing-safe comparison to prevent timing attacks.
  * - For password verification, always return a boolean (never throw on mismatch).
  */
-function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean = false ): boolean {}
+async function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean = false ): Promise<boolean> {}
 
 ```
 
@@ -399,7 +399,7 @@ All error classes share these properties:
 import { encrypt, HashitakaError, HashLengthMismatchError } from '@dwtechs/hashitaka';
 
 try {
-  const result = encrypt('mySecret', 'invalidBase64Secret');
+  const result = await encrypt('mySecret', 'invalidBase64Secret');
   // ...use result
 } catch (err) {
   if (err instanceof HashLengthMismatchError) {
@@ -427,7 +427,7 @@ try {
 | InvalidStringToEncryptError | INVALID_STRING_TO_ENCRYPT | 400 | Invalid string to encrypt |
 | InvalidSecretToEncryptError | INVALID_SECRET_TO_ENCRYPT | 400 | Invalid base64 secret for encryption |
 | InvalidSaltRoundsError      | INVALID_SALT_ROUNDS       | 400 | Invalid salt rounds, must be between 12 and 100 |
-| InvalidKeyLengthError       | INVALID_KEY_LENGTH        | 400 | Invalid key length, must be between 2 and 256 |
+| InvalidKeyLengthError       | INVALID_KEY_LENGTH        | 400 | Invalid key length, must be between 32 and 256 |
 | InvalidDigestFunctionError  | INVALID_DIGEST_FUNCTION   | 400 | Invalid hash digest function |
 | HmacCreationError           | HMAC_CREATION_FAILED      | 500 | Failed to create HMAC hash |
 | Pbkdf2DerivationError       | PBKDF2_DERIVATION_FAILED  | 500 | Failed to derive key using PBKDF2 |

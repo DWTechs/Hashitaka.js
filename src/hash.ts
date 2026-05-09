@@ -1,9 +1,12 @@
 import { randomBytes, 
          createHmac,
          getHashes,
-         pbkdf2Sync,
+         pbkdf2 as pbkdf2Cb,
          timingSafeEqual 
        } from "node:crypto";
+import { promisify } from "node:util";
+
+const cryptoPbkdf2 = promisify(pbkdf2Cb);
 import { isValidInteger, 
          isString, 
          isIn
@@ -22,7 +25,8 @@ import { MIN_SALT_RNDS,
          MIN_KEY_LEN, 
          MAX_KEY_LEN,
          DEFAULT_KEY_LEN,
-         DEFAULT_SALT_RNDS } from "./constants.js";
+         DEFAULT_SALT_RNDS,
+         SALT_LEN } from "./constants.js";
 
 const digests = getHashes();
 let digest = "sha256";
@@ -103,7 +107,7 @@ function setSaltRounds(rnds: number): boolean {
   try {
     isValidInteger(rnds, MIN_SALT_RNDS, MAX_SALT_RNDS, true, true);
   } catch (err) {
-    throw new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS, err);
+    throw new InvalidSaltRoundsError(MIN_SALT_RNDS, MAX_SALT_RNDS, err instanceof Error ? err : new Error(String(err)));
   }
   
 	saltRnds = rnds;
@@ -131,7 +135,7 @@ function setKeyLen(len: number): boolean {
   try {
     isValidInteger(len, MIN_KEY_LEN, MAX_KEY_LEN, true, true);
   } catch (err) {
-    throw new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN, err);
+    throw new InvalidKeyLengthError(MIN_KEY_LEN, MAX_KEY_LEN, err instanceof Error ? err : new Error(String(err)));
   }
   
 	keyLen = len;
@@ -159,7 +163,7 @@ function setDigest(func: string): boolean {
   try {
     isIn(digests, func, undefined, true);
   } catch (err) {
-    throw new InvalidDigestFunctionError(err);
+    throw new InvalidDigestFunctionError(err instanceof Error ? err : new Error(String(err)));
   }
   
 	digest = func;
@@ -203,7 +207,7 @@ function hash(str: string, secret: string): string {
   try {
     return createHmac(digest, secret).update(str).digest("base64url");
   } catch (err) {
-    throw new HmacCreationError(err);
+    throw new HmacCreationError(err instanceof Error ? err : new Error(String(err)));
   }
 }
 
@@ -217,7 +221,7 @@ function hash(str: string, secret: string): string {
  * // salt might be: '9f86d081884c7d659a2feaa0c55ad015'
  */
 function randomSalt(): string {
-  return randomBytes(16).toString("hex");
+  return randomBytes(SALT_LEN / 2).toString("hex");
 }
 
 
@@ -245,9 +249,9 @@ function randomSalt(): string {
  * - Use a unique, random salt for each password.
  * - The output Buffer can be stored as-is or encoded (e.g., hex or base64).
  */
-function pbkdf2(str: string, secret: string, salt: string): Buffer {
+async function pbkdf2(str: string, secret: string, salt: string): Promise<Buffer> {
   try {
-    return pbkdf2Sync(
+    return await cryptoPbkdf2(
       hash(str, secret),
       salt,
       saltRnds,
@@ -255,7 +259,7 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
       digest
     );
   } catch (err) {
-    throw new Pbkdf2DerivationError(err);
+    throw new Pbkdf2DerivationError(err instanceof Error ? err : new Error(String(err)));
   }
 }
 
@@ -284,22 +288,22 @@ function pbkdf2(str: string, secret: string, salt: string): Buffer {
  * - Use for password storage or verification, not for data you need to decrypt.
  * - For verification, use the `compare` function with the same secret.
  */
-function encrypt(str: string, b64Secret: string): string {
+async function encrypt(str: string, b64Secret: string): Promise<string> {
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    throw new InvalidStringToEncryptError(err);
+    throw new InvalidStringToEncryptError(err instanceof Error ? err : new Error(String(err)));
   }
   
   let secret: string;
   try {
     secret = b64Decode(b64Secret, true);  // Decode as URL-safe base64
   } catch (err) {
-    throw new InvalidSecretToEncryptError(err);
+    throw new InvalidSecretToEncryptError(err instanceof Error ? err : new Error(String(err)));
   }
   
   const salt = randomSalt();
-  return salt + pbkdf2(str, secret, salt).toString("hex"); // salt + hashedStr
+  return salt + (await pbkdf2(str, secret, salt)).toString("hex"); // salt + hashedStr
 }
 
 export {

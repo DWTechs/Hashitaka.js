@@ -3,6 +3,7 @@ import { tse, pbkdf2 } from "./hash";
 import { b64Decode } from "./base64.js";
 import { InvalidStringToCompareError, 
          InvalidHashToCompareError } from "./errors";
+import { SALT_LEN } from "./constants.js";
 
 /**
  * Verifies whether a plaintext string matches a previously hashed value using the same secret and salt extraction logic.
@@ -34,29 +35,29 @@ import { InvalidStringToCompareError,
  * - Uses timing-safe comparison to prevent timing attacks.
  * - For password verification, always return a boolean (never throw on mismatch).
  */
-function compare(
+async function compare(
   str: string, 
   hash: string, 
   b64Secret: string, 
   urlSafe: boolean = false
-): boolean {
+): Promise<boolean> {
 
   try {
     isString(str, "!0", null, true);
   } catch (err) {
-    throw new InvalidStringToCompareError(err);
+    throw new InvalidStringToCompareError(err instanceof Error ? err : new Error(String(err)));
   }
   
   try {
     isString(hash, "!0", null, true);
   } catch (err) {
-    throw new InvalidHashToCompareError(err);
+    throw new InvalidHashToCompareError(err instanceof Error ? err : new Error(String(err)));
   }
   
   const secret = b64Decode(b64Secret, urlSafe);
-  const salt = hash.slice(0, 32); // Assuming the salt length is 16 bytes (32 hex characters)
-  const hashedStr = pbkdf2(str, secret, salt); 
-  const storedHash = Buffer.from(hash.slice(32), "hex");
+  const salt = hash.slice(0, SALT_LEN);
+  const hashedStr = await pbkdf2(str, secret, salt);
+  const storedHash = Buffer.from(hash.slice(SALT_LEN), "hex");
   return tse(storedHash, hashedStr);
 }
 

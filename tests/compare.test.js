@@ -4,29 +4,27 @@ describe("compare", () => {
 	const password = "mySecret!/;6(A)Pwd";
 	const wrongPassword = "wr0ngPa55word!";
 	const secret = "8zYSoxUV36qy8tiIGytsA7qPdFecywiQs0sHBze_Skg";
-	const hashedPassword = encrypt(password, secret);
-  const hashedPassword2 = encrypt(password, secret);
-	const otherHashedPassword = encrypt(password, secret);
-  const otherHashedPassword2 = encrypt(password, secret);
-	const anotherHashedPassword = encrypt(password, secret);
-  const anotherHashedPassword2 = encrypt(password, secret);
-//   console.log("hashedPassword", hashedPassword);
-//   console.log("hashedPassword2", hashedPassword2);
-//   console.log("otherHashedPassword", otherHashedPassword);
-//   console.log("otherHashedPassword2", otherHashedPassword2);
-//   console.log("anotherHashedPassword", anotherHashedPassword);
-//   console.log("anotherHashedPassword2", anotherHashedPassword2);
+	let hashedPassword, hashedPassword2, otherHashedPassword, otherHashedPassword2, anotherHashedPassword, anotherHashedPassword2;
 
-	test("returns true when comparing with the right password with url-safe secret and url-safe comparison", () => {
-		expect(compare(password, hashedPassword, secret, true)).toBe(true);
+	beforeAll(async () => {
+		hashedPassword = await encrypt(password, secret);
+		hashedPassword2 = await encrypt(password, secret);
+		otherHashedPassword = await encrypt(password, secret);
+		otherHashedPassword2 = await encrypt(password, secret);
+		anotherHashedPassword = await encrypt(password, secret);
+		anotherHashedPassword2 = await encrypt(password, secret);
 	});
 
-  test("Throws error when comparing with the right password with url-safe secret and non url-safe comparison", () => {
-		expect(() => compare(password, hashedPassword, secret, false)).toThrow();
+	test("returns true when comparing with the right password with url-safe secret and url-safe comparison", async () => {
+		expect(await compare(password, hashedPassword, secret, true)).toBe(true);
+	});
+
+  test("Throws error when comparing with the right password with url-safe secret and non url-safe comparison", async () => {
+		await expect(compare(password, hashedPassword, secret, false)).rejects.toThrow();
 
     let caughtError;
 		try {
-			compare(password, hashedPassword, secret, false);
+			await compare(password, hashedPassword, secret, false);
 		} catch (err) {
 			caughtError = err;
 		}
@@ -42,20 +40,20 @@ describe("compare", () => {
 		console.log('================================\n');
 	});
 
-	test("returns true when comparing another hash with the right password with url-safe secret and url-safe comparison", () => {
-		expect(compare(password, otherHashedPassword, secret, true)).toBe(true);
+	test("returns true when comparing another hash with the right password with url-safe secret and url-safe comparison", async () => {
+		expect(await compare(password, otherHashedPassword, secret, true)).toBe(true);
 	});
 
-  test("Throws error when comparing another hash with the right password with url-safe secret and non url-safe comparison", () => {
-		expect(() => compare(password, hashedPassword, secret, false)).toThrow();
+  test("Throws error when comparing another hash with the right password with url-safe secret and non url-safe comparison", async () => {
+		await expect(compare(password, hashedPassword, secret, false)).rejects.toThrow();
 	});
 
-	test("returns true when comparing yet another hash with the right password with url-safe secret and url-safe comparison", () => {
-		expect(compare(password, anotherHashedPassword, secret, true)).toBe(true);
+	test("returns true when comparing yet another hash with the right password with url-safe secret and url-safe comparison", async () => {
+		expect(await compare(password, anotherHashedPassword, secret, true)).toBe(true);
 	});
 
-  test("throws error when comparing yet another hash with the right password with url-safe secret and non url-safe comparison", () => {
-		expect(() => compare(password, anotherHashedPassword, secret, false)).toThrow();
+  test("throws error when comparing yet another hash with the right password with url-safe secret and non url-safe comparison", async () => {
+		await expect(compare(password, anotherHashedPassword, secret, false)).rejects.toThrow();
 	});
 
 	test("Test if two hashes of the same password are different ", () => {
@@ -70,23 +68,23 @@ describe("compare", () => {
 		expect(otherHashedPassword).not.toBe(anotherHashedPassword);
 	});
 
-	test("Returns false when comparing with wrong password with url-safe secret and non url-safe comparison", () => {
-		expect(() => compare(wrongPassword, hashedPassword, secret)).toThrow();
+	test("Returns false when comparing with wrong password with url-safe secret and non url-safe comparison", async () => {
+		await expect(compare(wrongPassword, hashedPassword, secret)).rejects.toThrow();
 	});
 
-  	test("Returns false when comparing with wrong password with url-safe secret and url-safe comparison", () => {
-		expect(compare(wrongPassword, hashedPassword, secret, true)).toBe(false);
+  	test("Returns false when comparing with wrong password with url-safe secret and url-safe comparison", async () => {
+		expect(await compare(wrongPassword, hashedPassword, secret, true)).toBe(false);
 	});
 
-	test("throws error when comparing with an empty password", () => {
-		expect(() => compare("", hashedPassword, secret)).toThrow();
+	test("throws error when comparing with an empty password", async () => {
+		await expect(compare("", hashedPassword, secret)).rejects.toThrow();
 	});
 
-	test("throws error when secret is empty", () => {
-		expect(() => compare(password, hashedPassword, "")).toThrow();
+	test("throws error when secret is empty", async () => {
+		await expect(compare(password, hashedPassword, "")).rejects.toThrow();
 	});
 
-	test("throws error when hashed password is empty", () => {
-		expect(() => compare(password, "", secret)).toThrow();
+	test("throws error when hashed password is empty", async () => {
+		await expect(compare(password, "", secret)).rejects.toThrow();
 	});
 });

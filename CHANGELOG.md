@@ -1,3 +1,9 @@
+# 0.4.0 (May 9th 2026)
+
+- **Breaking**: `pbkdf2()`, `encrypt()` and `compare()` are now async and return Promises — callers must `await` them
+- **Security**: `rndB64Secret()` now encodes random bytes directly to base64 instead of going through a UTF-8 round-trip, preserving full entropy
+- **Security**: `MIN_KEY_LEN` raised from `2` to `32` bytes (OWASP minimum for PBKDF2 output)
+
 # 0.3.1 (Sep 5th 2025)
 
 - Add `urlSafe` parameter to the `compare` and `rndB64Secret` functions to chose from URL-safe base64 secrets or standard base64 secrets

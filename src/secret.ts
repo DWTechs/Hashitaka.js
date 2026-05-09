@@ -1,6 +1,5 @@
 import { randomBytes } from "node:crypto";
 import { isValidInteger } from "@dwtechs/checkard";
-import { b64Encode } from "./base64.js";
 import { DEFAULT_SECRET_LEN, 
 		 MIN_SECRET_LEN, 
 		 MAX_SECRET_LEN 
@@ -15,7 +14,10 @@ import { DEFAULT_SECRET_LEN,
  */
 function create(len: number = DEFAULT_SECRET_LEN, urlSafe: boolean = true): string {
 	const kl = isValidInteger(len, MIN_SECRET_LEN, MAX_SECRET_LEN) ? len : DEFAULT_SECRET_LEN;
-	return b64Encode(randomBytes(kl).toString("utf8"), urlSafe);
+	const bytes = randomBytes(kl);
+	if (urlSafe)
+		return bytes.toString("base64url");
+	return bytes.toString("base64");
 }
 
 export { create };

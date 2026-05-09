@@ -2,7 +2,7 @@ import { setKeyLen, getKeyLen } from "../dist/hashitaka.js";
 
 describe("setKeyLen", () => {
 	test("sets the key length correctly", () => {
-		const keyLen = 24;
+		const keyLen = 64;
 		setKeyLen(keyLen);
 		expect(getKeyLen()).toBe(keyLen);
 	});
@@ -14,7 +14,7 @@ describe("setKeyLen", () => {
 	});
 
 	test("sets the key length at the lower limit", () => {
-		const keyLen = 2;
+		const keyLen = 32;
 		setKeyLen(keyLen);
 		expect(getKeyLen()).toBe(keyLen);
 	});
@@ -23,6 +23,9 @@ describe("setKeyLen", () => {
 			expect(() => setKeyLen(0)).toThrow();
 			expect(() => setKeyLen(-1)).toThrow();
 			expect(() => setKeyLen(1)).toThrow();
+			expect(() => setKeyLen(2)).toThrow();
+			expect(() => setKeyLen(24)).toThrow();
+			expect(() => setKeyLen(31)).toThrow();
 			expect(() => setKeyLen(257)).toThrow();
 			expect(() => setKeyLen(3.5)).toThrow();
 		});
