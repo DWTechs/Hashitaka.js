@@ -1,4 +1,4 @@
-import { compare, encrypt } from "../dist/hashitaka.js";
+import { compare, encrypt, InvalidStringToCompareError, InvalidHashToCompareError } from "../dist/hashitaka.js";
 
 describe("compare", () => {
 	const password = "mySecret!/;6(A)Pwd";
@@ -86,5 +86,31 @@ describe("compare", () => {
 
 	test("throws error when hashed password is empty", async () => {
 		await expect(compare(password, "", secret)).rejects.toThrow();
+	});
+
+	test("throws InvalidStringToCompareError for non-string password", async () => {
+		await expect(compare(null, hashedPassword, secret, true)).rejects.toThrow(InvalidStringToCompareError);
+		await expect(compare(123, hashedPassword, secret, true)).rejects.toThrow(InvalidStringToCompareError);
+	});
+
+	test("throws InvalidHashToCompareError for non-string hash", async () => {
+		await expect(compare(password, null, secret, true)).rejects.toThrow(InvalidHashToCompareError);
+		await expect(compare(password, 123, secret, true)).rejects.toThrow(InvalidHashToCompareError);
+	});
+
+	test("returns false for a tampered hash portion", async () => {
+		const salt = hashedPassword.slice(0, 32);
+		const tampered = salt + "00".repeat(hashedPassword.slice(32).length / 2);
+		expect(await compare(password, tampered, secret, true)).toBe(false);
+	});
+
+	test("throws for a hash shorter than the salt length", async () => {
+		await expect(compare(password, "tooshort", secret, true)).rejects.toThrow();
+	});
+
+	test("handles unicode password comparison", async () => {
+		const unicodeHash = await encrypt("pässwörd🔑", secret);
+		expect(await compare("pässwörd🔑", unicodeHash, secret, true)).toBe(true);
+		expect(await compare("wrongpwd", unicodeHash, secret, true)).toBe(false);
 	});
 });

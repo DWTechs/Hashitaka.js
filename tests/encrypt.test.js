@@ -1,4 +1,4 @@
-import { encrypt, rndB64Secret } from "../dist/hashitaka.js";
+import { encrypt, rndB64Secret, InvalidStringToEncryptError, InvalidSecretToEncryptError } from "../dist/hashitaka.js";
 
 describe("encrypt", () => {
 	const password = "mySecret!/;6(A)Pwd";
@@ -41,5 +41,27 @@ describe("encrypt", () => {
 			await expect(encrypt(password, null)).rejects.toThrow();
 			await expect(encrypt({}, validSecret)).rejects.toThrow();
 			await expect(encrypt(password, [])).rejects.toThrow();
+		});
+
+		test("throws InvalidStringToEncryptError for invalid password", async () => {
+			await expect(encrypt("", validSecret)).rejects.toThrow(InvalidStringToEncryptError);
+			await expect(encrypt(null, validSecret)).rejects.toThrow(InvalidStringToEncryptError);
+		});
+
+		test("throws InvalidSecretToEncryptError for invalid secret", async () => {
+			await expect(encrypt(password, "not-valid-base64!!!")).rejects.toThrow(InvalidSecretToEncryptError);
+			await expect(encrypt(password, "")).rejects.toThrow(InvalidSecretToEncryptError);
+		});
+
+		test("output starts with 32-char hex salt followed by hex hash", async () => {
+			const result = await encrypt(password, validSecret);
+			expect(result.length).toBeGreaterThan(32);
+			expect(result.slice(0, 32)).toMatch(/^[0-9a-f]{32}$/);
+			expect(result.slice(32)).toMatch(/^[0-9a-f]+$/);
+		});
+
+		test("handles unicode password", async () => {
+			const result = await encrypt("pässwörd🔑", validSecret);
+			expect(typeof result).toBe("string");
 		});
 });

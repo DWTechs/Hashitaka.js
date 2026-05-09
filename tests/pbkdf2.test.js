@@ -35,4 +35,23 @@ describe("pbkdf2", () => {
     const expected = crypto.pbkdf2Sync(input, salt, 12, 64, "sha256");
     expect((await pbkdf2(password, secret, salt)).equals(expected)).toBe(true);
   });
+
+  it("produces different outputs for different secrets", async () => {
+    const k1 = await pbkdf2(password, "secretA", salt);
+    const k2 = await pbkdf2(password, "secretB", salt);
+    expect(k1.equals(k2)).toBe(false);
+  });
+
+  it("returns a buffer of the configured key length (64 bytes by default)", async () => {
+    const result = await pbkdf2(password, secret, salt);
+    expect(result.length).toBe(64);
+  });
+
+  it("throws for null password", async () => {
+    await expect(pbkdf2(null, secret, salt)).rejects.toThrow();
+  });
+
+  it("throws for null secret", async () => {
+    await expect(pbkdf2(password, null, salt)).rejects.toThrow();
+  });
 });

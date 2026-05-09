@@ -1,4 +1,4 @@
-import { b64Encode } from "../../dist/hashitaka";
+import { b64Encode, b64Decode } from "../../dist/hashitaka";
 
 const estring = "c3RyaW5n"; // string
 const e1 = "MQ=="; // 1
@@ -54,4 +54,30 @@ test("sends float as string to b64Encode without typeCheck", () => {
 
 test("sends float in string to b64Encode without typeCheck", () => {
   expect(b64Encode("8.9rt", false)).toBe(e5);
+});
+
+test("throws for empty string", () => {
+  expect(() => b64Encode("")).toThrow();
+});
+
+test("throws for null", () => {
+  expect(() => b64Encode(null)).toThrow();
+});
+
+test("throws for undefined", () => {
+  expect(() => b64Encode(undefined)).toThrow();
+});
+
+test("throws for number", () => {
+  expect(() => b64Encode(123)).toThrow();
+});
+
+test("throws for object", () => {
+  expect(() => b64Encode({})).toThrow();
+});
+
+test("encodes unicode string correctly", () => {
+  const result = b64Encode("héllo");
+  expect(typeof result).toBe("string");
+  expect(b64Decode(result, true)).toBe("héllo");
 });

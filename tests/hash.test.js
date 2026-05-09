@@ -34,4 +34,38 @@ describe("hash", () => {
     const expected = crypto.createHmac("sha256", secret).update(input).digest("base64url");
     expect(hash(input, secret)).toBe(expected);
   });
+
+  it("produces different hashes for different secrets", () => {
+    const h1 = hash("same", "secretA");
+    const h2 = hash("same", "secretB");
+    expect(h1).not.toBe(h2);
+  });
+
+  it("handles unicode input", () => {
+    const result = hash("pässwörd🔑", secret);
+    expect(typeof result).toBe("string");
+    expect(result).toMatch(/^[A-Za-z0-9_-]+$/);
+  });
+
+  it("handles a very long input string", () => {
+    const longStr = "a".repeat(100000);
+    const result = hash(longStr, secret);
+    expect(typeof result).toBe("string");
+  });
+
+  it("throws for null input", () => {
+    expect(() => hash(null, secret)).toThrow();
+  });
+
+  it("throws for undefined input", () => {
+    expect(() => hash(undefined, secret)).toThrow();
+  });
+
+  it("throws for numeric input", () => {
+    expect(() => hash(123, secret)).toThrow();
+  });
+
+  it("throws for null secret", () => {
+    expect(() => hash("hello", null)).toThrow();
+  });
 });

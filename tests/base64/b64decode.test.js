@@ -91,3 +91,23 @@ test("sends float string not url safe in string to b64Decode urlsafe", () => {
 test("sends float string url-safe in string to b64Decode not url-safe", () => {
   expect(() => b64Decode(t9e, false)).toThrow();
 });
+
+test("throws for null input", () => {
+  expect(() => b64Decode(null, true)).toThrow();
+});
+
+test("throws for undefined input", () => {
+  expect(() => b64Decode(undefined, true)).toThrow();
+});
+
+test("throws for empty string", () => {
+  expect(() => b64Decode("", true)).toThrow();
+});
+
+test("throws for non-base64 characters", () => {
+  expect(() => b64Decode("not valid base64!!!", true)).toThrow();
+});
+
+test("throws for number input", () => {
+  expect(() => b64Decode(123, true)).toThrow();
+});
