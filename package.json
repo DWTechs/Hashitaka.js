@@ -8,8 +8,8 @@
     "security"
   ],
   "homepage": "https://github.com/DWTechs/Hashitaka.js",
-  "main": "dist/hashitaka",
-  "types": "dist/hashitaka",
+  "main": "dist/hashitaka.js",
+  "types": "dist/hashitaka.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/DWTechs/Hashitaka.js"

@@ -1,6 +1,6 @@
 
 const config =  {
-  input: "build/es6/hashitaka.js",
+  input: "build/esm/hashitaka.js",
   output: {
     name: "hashitaka",
     file: "build/hashitaka.mjs",

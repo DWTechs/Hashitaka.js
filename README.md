@@ -22,7 +22,7 @@
 - 📦 Only 1 dependency to check inputs variables
 - 🪶 Very lightweight
 - 🧪 Thoroughly tested with more than 120 Unit tests
-- 🚚 Shipped as EcmaScrypt module
+- 🚚 Shipped as ES2022 ECMAScript module
 - 📝 Written in Typescript
 
 
@@ -43,9 +43,9 @@ $ npm i @dwtechs/hashitaka
 
 ## Usage
 
-### ES6 / TypeScript
+### ESM / TypeScript
 
-Example of use with Express.js using ES6 module format
+Example of use with Express.js using ESM format
 
 ```javascript
 
@@ -454,5 +454,5 @@ To contribute please read **[contributor.md](https://github.com/DWTechs/Hashitak
 | repository      |        [Github](https://github.com/)         |     hosting for software development version control using Git |
 | package manager |     [npm](https://www.npmjs.com/get-npm)     |                                default node.js package manager |
 | language        | [TypeScript](https://www.typescriptlang.org) | static type checking along with the latest ECMAScript features |
-| module bundler  |      [Rollup.js](https://rollupjs.org)       |                        advanced module bundler for ES6 modules |
+| module bundler  |      [Rollup.js](https://rollupjs.org)       |                         advanced module bundler for ES modules |
 | unit testing    |          [Jest](https://jestjs.io/)          |                  delightful testing with a focus on simplicity |

@@ -1,5 +1,6 @@
 # 0.4.0 (May 9th 2026)
 
+- Now distributed as a native ES2022 ECMAScript module (ESM)
 - **Breaking**: `pbkdf2()`, `encrypt()` and `compare()` are now async and return Promises — callers must `await` them
 - **Security**: `rndB64Secret()` now encodes random bytes directly to base64 instead of going through a UTF-8 round-trip, preserving full entropy
 - **Security**: `MIN_KEY_LEN` raised from `2` to `32` bytes (OWASP minimum for PBKDF2 output)
