@@ -1,11 +1,11 @@
 # 0.5.0 (Aug 1st 2026)
 
-- **Breaking / Security**: PBKDF2 iteration bounds (`saltRnds`) raised from `12`-`100` to `600000`-`2000000` (OWASP minimum for PBKDF2-HMAC-SHA256), default raised from `12` to `600000`. Hashes created with the previous default/range will no longer verify with `compare()` and must be re-hashed.
+- **Breaking / Security**: PBKDF2 iteration bounds (`saltRnds`) raised to `600000`-`2000000` (OWASP minimum for PBKDF2-HMAC-SHA256). Hashes created with lower range will no longer verify with `compare()` and must be re-hashed.
 - **Breaking**: `compare()`'s `urlSafe` parameter now defaults to `true` instead of `false`, matching `encrypt()`'s fixed URL-safe secret decoding
 - **Breaking / Security**: `setDigest()` and `getDigests()` now restrict to a secure allowlist (`sha256`, `sha384`, `sha512`, `sha512-256`, `sha3-256`, `sha3-384`, `sha3-512`); weak/broken digests such as `md5` and `sha1` are rejected even though Node exposes them
 - **Breaking**: `rndB64Secret()` now throws `InvalidSecretLengthError` for an invalid or out-of-range length instead of silently falling back to the default length
 - Add `InvalidSecretLengthError`
-- Fix: all custom error classes are now exported from the package entry point (previously only `HashitakaError` was exported at runtime, despite the others being declared in the type definitions)
+- All custom error classes are now exported from the package entry point
 - Update dependencies : 
   - @dwtechs/checkard: 3.6.1
   - @dwtechs/winstan: 0.7.1
