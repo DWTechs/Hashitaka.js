@@ -1,4 +1,4 @@
-import { pbkdf2, hash } from "../dist/hashitaka.js";
+import { pbkdf2, hash, getSaltRounds } from "../dist/hashitaka.js";
 import crypto from "node:crypto";
 
 describe("pbkdf2", () => {
@@ -32,7 +32,7 @@ describe("pbkdf2", () => {
   it("matches Node.js pbkdf2Sync with same parameters", async () => {
     // The input to pbkdf2 is hash(password, secret)
     const input = hash(password, secret);
-    const expected = crypto.pbkdf2Sync(input, salt, 12, 64, "sha256");
+    const expected = crypto.pbkdf2Sync(input, salt, getSaltRounds(), 64, "sha256");
     expect((await pbkdf2(password, secret, salt)).equals(expected)).toBe(true);
   });
 

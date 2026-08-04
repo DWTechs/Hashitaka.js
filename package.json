@@ -8,6 +8,7 @@
     "security"
   ],
   "homepage": "https://github.com/DWTechs/Hashitaka.js",
+  "type": "module",
   "main": "dist/hashitaka.js",
   "types": "dist/hashitaka.d.ts",
   "repository": {

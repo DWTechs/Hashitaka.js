@@ -1,5 +1,5 @@
-// const path = require('path');
-const fs      = require('node:fs');
+// import path from 'node:path';
+import fs from 'node:fs';
 
 const mail    = 'https://github.com/DWTechs/Hashitaka.js';
 const CRLF    = '\r\n';

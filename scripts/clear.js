@@ -1,5 +1,5 @@
-// const path = require('path');
-const fs = require('node:fs');
+// import path from 'node:path';
+import fs from 'node:fs';
 const options = {   recursive: true, 
                     force: true
                 };

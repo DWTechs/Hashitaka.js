@@ -116,7 +116,7 @@ export class InvalidStringToCompareError extends HashitakaError {
   readonly code = "INVALID_STRING_TO_COMPARE";
   readonly statusCode = 400;
 
-  constructor(causedBy: Error) {
+  constructor(causedBy?: Error) {
     const message = "Invalid string for hash comparison";
     super(message, causedBy);
   }
@@ -140,7 +140,7 @@ export class InvalidHashToCompareError extends HashitakaError {
   readonly code = "INVALID_HASH_TO_COMPARE";
   readonly statusCode = 400;
 
-  constructor(causedBy: Error) {
+  constructor(causedBy?: Error) {
     const message = "Invalid hash for comparison";
     super(message, causedBy);
   }
