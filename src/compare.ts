@@ -15,7 +15,7 @@ import { SALT_LEN } from "./constants.js";
  * @param {string} str - The plaintext string to verify (e.g., a password).
  * @param {string} hash - The stored hash to compare against (salt + hash, as produced by `encrypt`).
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
- * @param {boolean} [urlSafe=false] - If true, decodes the secret using URL-safe base64 encoding.
+ * @param {boolean} [urlSafe=true] - If true, decodes the secret using URL-safe base64 encoding. Defaults to true to match `encrypt`'s decoding.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
  * @throws {InvalidStringForCompareError} If `str` is not a non-empty string.
@@ -39,7 +39,7 @@ async function compare(
   str: string, 
   hash: string, 
   b64Secret: string, 
-  urlSafe: boolean = false
+  urlSafe: boolean = true
 ): Promise<boolean> {
 
   try {

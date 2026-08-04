@@ -2,19 +2,19 @@ import { setSaltRounds, getSaltRounds } from "../dist/hashitaka.js";
 
 describe("setSaltRounds", () => {
 	test("sets the salt rounds correctly", () => {
-		const saltRounds = 14;
+		const saltRounds = 700000;
 		setSaltRounds(saltRounds);
 		expect(getSaltRounds()).toBe(saltRounds);
 	});
 
 	test("sets the salt rounds at the upper limit", () => {
-		const saltRounds = 100;
+		const saltRounds = 2000000;
 		setSaltRounds(saltRounds);
 		expect(getSaltRounds()).toBe(saltRounds);
 	});
 
 	test("sets the salt rounds at the lower limit", () => {
-		const saltRounds = 12;
+		const saltRounds = 600000;
 		setSaltRounds(saltRounds);
 		expect(getSaltRounds()).toBe(saltRounds);
 	});
@@ -23,7 +23,7 @@ describe("setSaltRounds", () => {
 			expect(() => setSaltRounds(0)).toThrow();
 			expect(() => setSaltRounds(-1)).toThrow();
 			expect(() => setSaltRounds(1)).toThrow();
-			expect(() => setSaltRounds(101)).toThrow();
+			expect(() => setSaltRounds(2000001)).toThrow();
 			expect(() => setSaltRounds(3, 5)).toThrow();
 		});
 
@@ -37,30 +37,30 @@ describe("setSaltRounds", () => {
 		});
 
 		test("throws error when setting with an array", () => {
-			expect(() => setSaltRounds([12])).toThrow();
+			expect(() => setSaltRounds([600000])).toThrow();
 		});
 
 		test("throws error for a value just below the minimum limit", () => {
-			expect(() => setSaltRounds(11)).toThrow();
+			expect(() => setSaltRounds(599999)).toThrow();
 		});
 
 		test("throws error for a value just above the maximum limit", () => {
-			expect(() => setSaltRounds(101)).toThrow();
+			expect(() => setSaltRounds(2000001)).toThrow();
 		});
 
 		test("does not change saltRnds to an invalid value after setting a valid value", () => {
-			setSaltRounds(14); // Set a valid value first
-			try { setSaltRounds(101); } catch (e) {} // Then try to set an invalid value
-			expect(getSaltRounds()).toBe(14); // Expect the saltRnds to remain at the last valid value
+			setSaltRounds(700000); // Set a valid value first
+			try { setSaltRounds(2000001); } catch (e) {} // Then try to set an invalid value
+			expect(getSaltRounds()).toBe(700000); // Expect the saltRnds to remain at the last valid value
 		});
 
 		test("throws error when setting with a floating-point number", () => {
-			expect(() => setSaltRounds(13.5)).toThrow();
+			expect(() => setSaltRounds(700000.5)).toThrow();
 		});
 
 	test("persists the salt rounds value after multiple valid set operations", () => {
-		setSaltRounds(15);
-		setSaltRounds(20);
-		expect(getSaltRounds()).toBe(20);
+		setSaltRounds(750000);
+		setSaltRounds(800000);
+		expect(getSaltRounds()).toBe(800000);
 	});
 });

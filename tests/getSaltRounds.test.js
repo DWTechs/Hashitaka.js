@@ -16,7 +16,7 @@ describe('getSaltRounds', () => {
   });
 
   test('returns the default salt rounds', () => {
-    const defaultSaltRounds = 12; // default salt rounds
+    const defaultSaltRounds = 600000; // default salt rounds
     expect(getSaltRounds()).toBe(defaultSaltRounds);
   });
 });

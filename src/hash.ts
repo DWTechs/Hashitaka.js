@@ -26,9 +26,11 @@ import { MIN_SALT_RNDS,
          MAX_KEY_LEN,
          DEFAULT_KEY_LEN,
          DEFAULT_SALT_RNDS,
-         SALT_LEN } from "./constants.js";
+         SALT_LEN,
+         SECURE_DIGESTS } from "./constants.js";
 
-const digests = getHashes();
+// Restrict to digests strong enough for password hashing, ignore weak ones the platform may expose
+const digests = getHashes().filter((d) => SECURE_DIGESTS.includes(d));
 let digest = "sha256";
 let keyLen = DEFAULT_KEY_LEN;
 let saltRnds = DEFAULT_SALT_RNDS;
@@ -99,9 +101,9 @@ function getSaltRounds(): number {
 /**
  * Sets the number of salt rounds for hashing.
  *
- * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
+ * @param {number} rnds - The number of PBKDF2 iterations to set. Must be a valid integer between 600000 and 2000000.
  * @returns {boolean} True if the salt rounds were successfully set.
- * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 12 and 100.
+ * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 600000 and 2000000.
  */
 function setSaltRounds(rnds: number): boolean {
   try {
@@ -172,6 +174,9 @@ function setDigest(func: string): boolean {
 
 /**
  * Returns the list of available hash functions.
+ *
+ * Only cryptographically strong digests are returned, weak/broken algorithms
+ * (e.g. md5, sha1) are excluded even if supported by the platform.
  *
  * @return {string[]} The list of available hash functions.
  */

@@ -44,4 +44,9 @@ describe("setDigest", () => {
 		expect(() => setDigest(upperCaseDigest)).toThrow(Error);
 		expect(setDigest(lowerCaseDigest)).toBe(true);
 	});
+
+	test("throws Error when setting a weak/broken digest", () => {
+		expect(() => setDigest("md5")).toThrow(Error);
+		expect(() => setDigest("sha1")).toThrow(Error);
+	});
 });

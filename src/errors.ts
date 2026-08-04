@@ -195,6 +195,30 @@ export class InvalidKeyLengthError extends HashitakaError {
 }
 
 /**
+ * Error thrown when the secret length value is invalid
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   rndB64Secret(-1);
+ * } catch (error) {
+ *   if (error instanceof InvalidSecretLengthError) {
+ *     console.log(error.message);
+ *   }
+ * }
+ * ```
+ */
+export class InvalidSecretLengthError extends HashitakaError {
+  readonly code = "INVALID_SECRET_LENGTH";
+  readonly statusCode = 400;
+
+  constructor(min: number, max: number, causedBy?: Error) {
+    const message = `Invalid secret length, must be between ${min} and ${max}`;
+    super(message, causedBy);
+  }
+}
+
+/**
  * Error thrown when the hash digest function is invalid
  * 
  * @example

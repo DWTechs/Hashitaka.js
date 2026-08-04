@@ -39,6 +39,11 @@ export declare class InvalidKeyLengthError extends HashitakaError {
     readonly statusCode = 400;
     constructor(min: number, max: number);
 }
+export declare class InvalidSecretLengthError extends HashitakaError {
+    readonly code = "INVALID_SECRET_LENGTH";
+    readonly statusCode = 400;
+    constructor(min: number, max: number);
+}
 export declare class InvalidDigestFunctionError extends HashitakaError {
     readonly code = "INVALID_DIGEST_FUNCTION";
     readonly statusCode = 400;

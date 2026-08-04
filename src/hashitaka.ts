@@ -13,4 +13,17 @@ export {  compare } from './compare';
 export {  create as rndB64Secret } from './secret';
 export {  b64Encode, 
           b64Decode } from './base64';
-export {  HashitakaError } from './errors';
+export {  HashitakaError,
+          HashLengthMismatchError,
+          InvalidBase64ToDecodeError,
+          InvalidStringToEncodeError,
+          InvalidStringToCompareError,
+          InvalidHashToCompareError,
+          InvalidSaltRoundsError,
+          InvalidKeyLengthError,
+          InvalidSecretLengthError,
+          InvalidDigestFunctionError,
+          HmacCreationError,
+          Pbkdf2DerivationError,
+          InvalidStringToEncryptError,
+          InvalidSecretToEncryptError } from './errors';

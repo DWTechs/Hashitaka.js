@@ -68,8 +68,12 @@ describe("compare", () => {
 		expect(otherHashedPassword).not.toBe(anotherHashedPassword);
 	});
 
-	test("Returns false when comparing with wrong password with url-safe secret and non url-safe comparison", async () => {
-		await expect(compare(wrongPassword, hashedPassword, secret)).rejects.toThrow();
+	test("returns false when comparing with wrong password using the default urlSafe (true)", async () => {
+		expect(await compare(wrongPassword, hashedPassword, secret)).toBe(false);
+	});
+
+	test("defaults urlSafe to true, matching encrypt's decoding", async () => {
+		expect(await compare(password, hashedPassword, secret)).toBe(true);
 	});
 
   	test("Returns false when comparing with wrong password with url-safe secret and url-safe comparison", async () => {

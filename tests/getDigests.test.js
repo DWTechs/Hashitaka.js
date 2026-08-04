@@ -39,4 +39,9 @@ describe("getDigests", () => {
 		);
 		expect(invalidValues.length).toBe(0);
 	});
+
+	test("excludes weak/broken digests even though node:crypto supports them", () => {
+		const digests = getDigests();
+		expect(digests).not.toEqual(expect.arrayContaining(["md5", "sha1"]));
+	});
 });

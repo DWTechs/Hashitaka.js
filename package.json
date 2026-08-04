@@ -1,6 +1,6 @@
 {
   "name": "@dwtechs/hashitaka",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Open source Node.js library for secure hash generation, encryption and comparison.",
   "keywords": [
     "hash",
@@ -36,8 +36,8 @@
     "node": ">= 22"
   },
   "dependencies": {
-    "@dwtechs/checkard": "3.6.0",
-    "@dwtechs/winstan": "0.7.0"
+    "@dwtechs/checkard": "3.6.1",
+    "@dwtechs/winstan": "0.7.1"
   },
   "devDependencies": {
     "@babel/core": "7.26.0",

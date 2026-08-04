@@ -111,7 +111,7 @@ export {
 ```typescript
 
 // Default values
-let saltRnds = 12
+let saltRnds = 600000
 let digest = "sha256";
 let keyLen = 64;
 
@@ -125,11 +125,11 @@ function getSaltRounds(): number {}
 /**
  * Sets the number of salt rounds for hashing.
  *
- * @param {number} rnds - The number of salt rounds to set. Must be a valid integer between 12 and 100.
+ * @param {number} rnds - The number of PBKDF2 iterations to set. Must be a valid integer between 600000 and 2000000.
  * @returns {boolean} True if the salt rounds were successfully set.
- * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 12 and 100.
+ * @throws {InvalidSaltRoundsError} If rnds is not a valid integer between 600000 and 2000000.
  */
-function setSaltRounds(rnds: number): boolean {} // between 12 and 100
+function setSaltRounds(rnds: number): boolean {} // between 600000 and 2000000
 
 /**
  * Returns the key length used for hashing.
@@ -158,7 +158,8 @@ function getDigest(): string {}
  * Sets the hash function used for hashing.
  * The list of available digests is returned by getDigests()
  *
- * @param {string} func - The hash function. Must be a valid value from the list of available hash functions.
+ * @param {string} func - The hash function. Must be a valid value from the list of available hash functions:
+ * "sha256", "sha384", "sha512", "sha512-256", "sha3-256", "sha3-384", "sha3-512".
  * @returns {boolean} True if the hash function was successfully set.
  * @throws {InvalidDigestError} If func is not a valid hash function from the available list.
  */
@@ -166,6 +167,9 @@ function setDigest(func: string): boolean {}
 
 /**
  * Returns the list of available hash functions.
+ *
+ * Only cryptographically strong digests are returned, weak/broken algorithms
+ * (e.g. md5, sha1) are excluded even if supported by the platform.
  *
  * @returns {string[]} The list of available hash functions.
  */
@@ -312,7 +316,7 @@ async function pbkdf2(str: string, secret: string, salt: string): Promise<Buffer
  * @param {string} str - The plaintext string to verify (e.g., a password).
  * @param {string} hash - The stored hash to compare against (salt + hash, as produced by `encrypt`).
  * @param {string} b64Secret - The base64-encoded secret (pepper) used for hashing.
- * @param {boolean} [urlSafe=false] - If true, decodes the secret using URL-safe base64 encoding.
+ * @param {boolean} [urlSafe=true] - If true, decodes the secret using URL-safe base64 encoding. Defaults to true to match `encrypt`'s decoding.
  * @returns {boolean} `true` if the plaintext matches the hash, `false` otherwise.
  *
  * @throws {InvalidStringToCompareError} If `str` is not a non-empty string.
@@ -332,7 +336,7 @@ async function pbkdf2(str: string, secret: string, salt: string): Promise<Buffer
  * - Uses timing-safe comparison to prevent timing attacks.
  * - For password verification, always return a boolean (never throw on mismatch).
  */
-async function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean = false ): Promise<boolean> {}
+async function compare( str: string, hash: string, b64Secret: string, urlSafe: boolean = true ): Promise<boolean> {}
 
 ```
 
@@ -343,9 +347,10 @@ async function compare( str: string, hash: string, b64Secret: string, urlSafe: b
 /**
  * Generates a random string of the specified length, encoded in base64.
  *
- * @param {number} [len=32] - The length of the random string to generate. Must be a valid integer between 1 and 262144. Defaults to 32 if not specified or invalid.
+ * @param {number} [len=32] - The length of the random string to generate. Must be a valid integer between 1 and 262144.
  * @param {boolean} [urlSafe=true] - If true, uses URL-safe base64 encoding. Defaults to true.
  * @returns {string} The generated random string encoded in base64.
+ * @throws {InvalidSecretLengthError} If `len` is not a valid integer between 1 and 262144.
  */
 function rndB64Secret(length = 32, urlSafe = true): string {}
 
@@ -426,8 +431,9 @@ try {
 | InvalidHashToCompareError   | INVALID_HASH_TO_COMPARE   | 400 | Invalid hash for comparison |
 | InvalidStringToEncryptError | INVALID_STRING_TO_ENCRYPT | 400 | Invalid string to encrypt |
 | InvalidSecretToEncryptError | INVALID_SECRET_TO_ENCRYPT | 400 | Invalid base64 secret for encryption |
-| InvalidSaltRoundsError      | INVALID_SALT_ROUNDS       | 400 | Invalid salt rounds, must be between 12 and 100 |
+| InvalidSaltRoundsError      | INVALID_SALT_ROUNDS       | 400 | Invalid salt rounds, must be between 600000 and 2000000 |
 | InvalidKeyLengthError       | INVALID_KEY_LENGTH        | 400 | Invalid key length, must be between 32 and 256 |
+| InvalidSecretLengthError    | INVALID_SECRET_LENGTH     | 400 | Invalid secret length, must be between 1 and 262144 |
 | InvalidDigestFunctionError  | INVALID_DIGEST_FUNCTION   | 400 | Invalid hash digest function |
 | HmacCreationError           | HMAC_CREATION_FAILED      | 500 | Failed to create HMAC hash |
 | Pbkdf2DerivationError       | PBKDF2_DERIVATION_FAILED  | 500 | Failed to derive key using PBKDF2 |
